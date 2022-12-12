@@ -1,0 +1,21 @@
+name: "content"
+instances: {
+    id: "Model_1"
+    prototype: "/main/MetalRoughSpheres.gltf/gameobjects/Model_1.go"
+}
+instances: {
+    id: "Model_2"
+    prototype: "/main/MetalRoughSpheres.gltf/gameobjects/Model_2.go"
+}
+instances: {
+    id: "Model_3"
+    prototype: "/main/MetalRoughSpheres.gltf/gameobjects/Model_3.go"
+}
+instances: {
+    id: "Model_4"
+    prototype: "/main/MetalRoughSpheres.gltf/gameobjects/Model_4.go"
+}
+instances: {
+    id: "Model_5"
+    prototype: "/main/MetalRoughSpheres.gltf/gameobjects/Model_5.go"
+}

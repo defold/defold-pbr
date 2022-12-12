@@ -3,21 +3,6 @@ scale_along_z: 0
 embedded_instances {
   id: "main"
   data: "components {\n"
-  "  id: \"cube\"\n"
-  "  component: \"/assets/models/cube.model\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  "components {\n"
   "  id: \"main\"\n"
   "  component: \"/main/main.script\"\n"
   "  position {\n"
@@ -31,12 +16,14 @@ embedded_instances {
   "    z: 0.0\n"
   "    w: 1.0\n"
   "  }\n"
+  "  property_decls {\n"
+  "  }\n"
   "}\n"
   "components {\n"
-  "  id: \"quad\"\n"
-  "  component: \"/assets/models/quad.model\"\n"
+  "  id: \"preview\"\n"
+  "  component: \"/main/preview.collectionproxy\"\n"
   "  position {\n"
-  "    x: 3.0\n"
+  "    x: 0.0\n"
   "    y: 0.0\n"
   "    z: 0.0\n"
   "  }\n"
@@ -46,20 +33,7 @@ embedded_instances {
   "    z: 0.0\n"
   "    w: 1.0\n"
   "  }\n"
-  "}\n"
-  "components {\n"
-  "  id: \"sphere\"\n"
-  "  component: \"/assets/models/sphere.model\"\n"
-  "  position {\n"
-  "    x: 1.5\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
+  "  property_decls {\n"
   "  }\n"
   "}\n"
   ""
@@ -82,7 +56,24 @@ embedded_instances {
 }
 embedded_instances {
   id: "camera"
-  data: "embedded_components {\n"
+  data: "components {\n"
+  "  id: \"vantage_component\"\n"
+  "  component: \"/vantage/vantage_component.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  property_decls {\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
   "  id: \"camera\"\n"
   "  type: \"camera\"\n"
   "  data: \"aspect_ratio: 1.0\\n"
@@ -90,6 +81,8 @@ embedded_instances {
   "near_z: 0.1\\n"
   "far_z: 1000.0\\n"
   "auto_aspect_ratio: 1\\n"
+  "orthographic_projection: 0\\n"
+  "orthographic_zoom: 1.0\\n"
   "\"\n"
   "  position {\n"
   "    x: 0.0\n"
@@ -108,6 +101,26 @@ embedded_instances {
     x: 0.0
     y: 0.0
     z: 10.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "ui"
+  data: ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
   }
   rotation {
     x: 0.0

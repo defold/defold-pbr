@@ -1,0 +1,12 @@
+mesh: "/main/MetalRoughSpheres.gltf/meshes/Spheres.002.glb"
+material: "/main/MetalRoughSpheres.gltf/materials/Material_0.material"
+textures: "/main/MetalRoughSpheres.gltf/textures/Texture_0.png"
+textures: "/main/MetalRoughSpheres.gltf/textures/Texture_1.png"
+textures: "/builtins/graphics/particle_blob.png"
+textures: "/builtins/graphics/particle_blob.png"
+textures: "/builtins/graphics/particle_blob.png"
+
+skeleton: ""
+animations: ""
+default_animation: ""
+name: "Model_3"

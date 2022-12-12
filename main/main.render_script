@@ -53,6 +53,15 @@ function init(self)
     self.near = -1
     self.far = 1
     self.projection_fn = stretch_projection
+
+    self.DEBUG_MODE_NONE       = 0
+    self.DEBUG_MODE_BASE_COLOR = 1
+    self.DEBUG_MODE_TC_0       = 2
+    self.DEBUG_MODE_TC_1       = 3
+    self.DEBUG_MODE_ROUGHNESS  = 4
+
+    self.pbr_constants = render.constant_buffer()
+    self.pbr_constants.u_pbr_debug_params =vmath.vector4(self.DEBUG_MODE_NONE)
 end
 
 function update(self)
@@ -76,13 +85,15 @@ function update(self)
     render.draw(self.particle_pred)
     render.draw_debug3d()
 
+    --self.pbr_constants.u_pbr_debug_params =vmath.vector4(self.DEBUG_MODE_ROUGHNESS)
+    
     -- render models
     --
     render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
     render.enable_state(render.STATE_CULL_FACE)
     render.enable_state(render.STATE_DEPTH_TEST)
     render.set_depth_mask(true)
-    render.draw(self.model_pred)
+    render.draw(self.model_pred, { constants = self.pbr_constants })
 
     -- debug rendering
     --

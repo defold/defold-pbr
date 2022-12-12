@@ -14,8 +14,8 @@ input_method = HiddenInputField
 package = com.defold.example.basic3d
 
 [project]
-dependencies = 
 title = defold-pbr
+dependencies#0 = https://github.com/Jhonnyg/vantage/archive/refs/heads/master.zip
 
 [physics]
 type = 3D
@@ -25,4 +25,7 @@ bundle_identifier = com.defold.example.basic3d
 
 [ios]
 bundle_identifier = com.defold.example.basic3d
+
+[input]
+game_binding = /vantage/vantage.input_bindingc
 
