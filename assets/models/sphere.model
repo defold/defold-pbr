@@ -1,0 +1,7 @@
+mesh: "/builtins/assets/meshes/sphere.dae"
+material: "/builtins/materials/model.material"
+textures: "/assets/images/brown.png"
+skeleton: ""
+animations: ""
+default_animation: ""
+name: "unnamed"
