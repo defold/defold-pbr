@@ -8,7 +8,7 @@
 #define USE_DEBUG_DRAWING
 #define USE_ROUGHNESS_MAP
 
-#define MAX_LIGHT_COUNT        4
+#define LIGHT_MAX_COUNT        4
 #define LIGHT_TYPE_DIRECTIONAL 0
 #define LIGHT_TYPE_POINT       1
 
@@ -29,7 +29,7 @@ uniform lowp sampler2D tex_metallic_roughness;
 uniform lowp sampler2D tex_occlusion;
 uniform lowp sampler2D tex_emissive;
 
-uniform mat4 u_light_data[MAX_LIGHT_COUNT];
+uniform mat4 u_light_data[LIGHT_MAX_COUNT];
 
 // col 0: xyz: position
 // col 1: xyz: direction
@@ -315,7 +315,7 @@ LightingInfo getLighting(PBRData data, PBRParams params, MaterialInfo mat)
 #endif
 
 #ifdef LIGHT_PUNCTUAL
-	for (int i=0; i < min(params.lightCount, MAX_LIGHT_COUNT); i++)
+	for (int i=0; i < min(params.lightCount, LIGHT_MAX_COUNT); i++)
 	{
 		vec3 l_pos        = GET_LIGHT_POSITION(i);
 		vec3 l_dir        = GET_LIGHT_DIRECTION(i);

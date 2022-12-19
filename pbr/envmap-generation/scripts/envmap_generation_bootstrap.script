@@ -1,0 +1,21 @@
+function init(self)
+	print("envmap generation")
+
+	local env_data = sys.load_resource("/pbr/envmaps/stpeters_probe.hdr")
+
+	local image_res = image.load(env_data, { desired_channels = 4 })
+
+	-- pprint(image_res)
+
+	local targs = {
+		type   = resource.TEXTURE_TYPE_2D,
+		width  = image_res.width,
+		height = image_res.height,
+		format = resource.TEXTURE_FORMAT_RGBA32F
+	}
+
+	self.my_float_texture = resource.create_texture("/my_float_texture.texturec", targs)
+	resource.set_texture(self.my_float_texture, targs, image_res.buffer)
+
+	go.set("/go1#model", "texture0", self.my_float_texture)
+end

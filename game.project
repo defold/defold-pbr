@@ -39,3 +39,6 @@ clear_color_blue = 0.25
 [library]
 include_dirs = pbr
 
+[shader]
+output_spirv = 1
+
