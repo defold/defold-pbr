@@ -1,5 +1,7 @@
 local C = require 'main/constants'
 
+local pbr = require 'defold-pbr/api'
+
 --
 -- projection that centers content with maintained aspect ratio and optional zoom
 --

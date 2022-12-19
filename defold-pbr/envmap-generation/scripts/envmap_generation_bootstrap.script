@@ -2,10 +2,7 @@ function init(self)
 	print("envmap generation")
 
 	local env_data = sys.load_resource("/pbr/envmaps/stpeters_probe.hdr")
-
 	local image_res = image.load(env_data, { desired_channels = 4 })
-
-	-- pprint(image_res)
 
 	local targs = {
 		type   = resource.TEXTURE_TYPE_2D,

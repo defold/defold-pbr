@@ -1,7 +1,7 @@
 name: "model"
 tags: "tile"
-vertex_program: "/pbr/envmap-generation/assets/model.vp"
-fragment_program: "/pbr/envmap-generation/assets/model.fp"
+vertex_program: "/defold-pbr/envmap-generation/assets/model.vp"
+fragment_program: "/defold-pbr/envmap-generation/assets/model.fp"
 vertex_space: VERTEX_SPACE_LOCAL
 vertex_constants {
   name: "mtx_worldview"

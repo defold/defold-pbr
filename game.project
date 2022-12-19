@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /pbr/envmap-generation/assets/envmap-generation.collectionc
+main_collection = /defold-pbr/envmap-generation/assets/envmap-generation.collectionc
 render = /main/main.renderc
 
 [script]
@@ -37,7 +37,7 @@ clear_color_green = 0.25
 clear_color_blue = 0.25
 
 [library]
-include_dirs = pbr
+include_dirs = defold-pbr
 
 [shader]
 output_spirv = 1
