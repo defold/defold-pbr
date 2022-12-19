@@ -1,5 +1,5 @@
 [bootstrap]
-main_collection = /main/main.collectionc
+main_collection = /pbr/envmap-generation/assets/envmap-generation.collectionc
 render = /main/main.renderc
 
 [script]
@@ -15,7 +15,9 @@ package = com.defold.example.basic3d
 
 [project]
 title = defold-pbr
+custom_resources = pbr/envmaps
 dependencies#0 = https://github.com/Jhonnyg/vantage/archive/refs/heads/master.zip
+dependencies#1 = https://github.com/andsve/dirtylarry/archive/master.zip
 
 [physics]
 type = 3D
@@ -27,5 +29,13 @@ bundle_identifier = com.defold.example.basic3d
 bundle_identifier = com.defold.example.basic3d
 
 [input]
-game_binding = /vantage/vantage.input_bindingc
+game_binding = /input/scene_input.input_bindingc
+
+[render]
+clear_color_red = 0.25
+clear_color_green = 0.25
+clear_color_blue = 0.25
+
+[library]
+include_dirs = pbr
 

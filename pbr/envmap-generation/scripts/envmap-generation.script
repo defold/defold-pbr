@@ -1,0 +1,12 @@
+function init(self)
+	print("envmap generation")
+
+	local env_data = sys.load_resource("/pbr/envmaps/footprint_court.hdr")
+
+	local image_resource = imageloader.load{
+		data = env_data,
+	}
+
+	print("hello")
+	pprint(image_resource)
+end

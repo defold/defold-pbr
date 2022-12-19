@@ -1,3 +1,19 @@
+#define DEBUG_MODE_NONE       0
+#define DEBUG_MODE_BASE_COLOR 1
+#define DEBUG_MODE_TC_0       2
+#define DEBUG_MODE_TC_1       3
+#define DEBUG_MODE_ROUGHNESS  4
+#define DEBUG_MODE_METALLIC   5
+
+#define USE_DEBUG_DRAWING
+#define USE_ROUGHNESS_MAP
+
+#define MAX_LIGHT_COUNT        4
+#define LIGHT_TYPE_DIRECTIONAL 0
+#define LIGHT_TYPE_POINT       1
+
+#define M_PI 3.141592653589793
+
 varying highp   vec4 var_position_world;
 varying mediump vec3 var_normal;
 varying mediump vec2 var_texcoord0;
@@ -5,7 +21,6 @@ varying mediump vec2 var_texcoord1;
 varying mediump mat3 var_TBN;
 
 uniform mediump vec4 u_camera_position;
-uniform mediump vec4 u_light_direction;
 
 // Material inputs
 uniform lowp sampler2D tex_albedo;
@@ -14,27 +29,37 @@ uniform lowp sampler2D tex_metallic_roughness;
 uniform lowp sampler2D tex_occlusion;
 uniform lowp sampler2D tex_emissive;
 
+uniform mat4 u_light_data[MAX_LIGHT_COUNT];
+
+// col 0: xyz: position
+// col 1: xyz: direction
+// col 2: xyz: color
+// col 3: x: type
+
+#define GET_LIGHT_POSITION(light_index)  u_light_data[light_index][0].xyz 
+#define GET_LIGHT_DIRECTION(light_index) u_light_data[light_index][1].xyz 
+#define GET_LIGHT_COLOR(light_index)     u_light_data[light_index][2].xyz 
+#define GET_LIGHT_TYPE(light_index)      int(u_light_data[light_index][3][0])
+#define GET_LIGHT_INTENSITY(light_index) u_light_data[light_index][3][1]
+
 uniform lowp vec4 u_pbr_params_0;
 uniform lowp vec4 u_pbr_params_1;
 uniform lowp vec4 u_pbr_params_2;
-uniform lowp vec4 u_pbr_debug_params;
+uniform lowp vec4 u_pbr_scene_params;
 
-#define DEBUG_MODE_NONE       0
-#define DEBUG_MODE_BASE_COLOR 1
-#define DEBUG_MODE_TC_0       2
-#define DEBUG_MODE_TC_1       3
-#define DEBUG_MODE_ROUGHNESS  4
-
-#define USE_DEBUG_DRAWING
-#define USE_ROUGHNESS_MAP
-
-const float M_PI = 3.141592653589793;
+struct Light
+{
+	int type;
+	vec3 position;
+	vec3 direction;
+};
 
 struct PBRParams
 {
 	vec4 baseColor;
 	float metallic;
 	float roughness;
+	float lightCount;
 	bool hasAlbedoTexture;
 	bool hasNormalTexture;
 	bool hasEmissiveTexture;
@@ -45,35 +70,38 @@ struct PBRParams
 struct MaterialInfo
 {
 	vec4  baseColor;
+	vec3  diffuseColor;
 	float ior;
 	vec3  f0;
 	vec3  f90;
 	float specularWeight;
 	float metallic;
 	float perceptualRoughness;
+	float alphaRoughness;
+};
+
+struct LightingInfo
+{
+	vec3 diffuse;
+	vec3 specular;
 };
 
 struct PBRData
 {
-	float NdotL;
-	float NdotV;
-	float NdotH;
-	float LdotH;
-	float VdotH;
-	float alphaRoughness;
-	vec3  reflectance0;
-	vec3  reflectance90;
-	vec3  diffuseColor;
+	vec3 vertexPositionWorld;
+	vec3 vertexDirectionToCamera;
+	vec3 vertexNormal;
 };
 
 vec4 applyDebugMode(vec4 color_in, MaterialInfo materialInfo, PBRData pbrData)
 {
-	int debug_mode = int(u_pbr_debug_params.x);
+	int debug_mode = int(u_pbr_scene_params.x);
 	if      (debug_mode == DEBUG_MODE_NONE)       return color_in;
 	else if (debug_mode == DEBUG_MODE_BASE_COLOR) return materialInfo.baseColor;
 	else if (debug_mode == DEBUG_MODE_TC_0)       return vec4(var_texcoord0, 0.0, 1.0);
 	else if (debug_mode == DEBUG_MODE_TC_1)       return vec4(var_texcoord1, 0.0, 1.0);
 	else if (debug_mode == DEBUG_MODE_ROUGHNESS)  return vec4(vec3(materialInfo.perceptualRoughness), 1.0);
+	else if (debug_mode == DEBUG_MODE_METALLIC)   return vec4(vec3(materialInfo.metallic), 1.0);
 	return color_in;
 }
 
@@ -81,6 +109,11 @@ vec4 toLinear(vec4 nonLinearIn)
 {
 	vec3 linearOut = pow(nonLinearIn.rgb, vec3(2.2));
 	return vec4(linearOut, nonLinearIn.a);
+}
+
+vec3 fromLinear(vec3 linearIn)
+{
+	return pow(linearIn, vec3(1.0 / 2.2));
 }
 
 PBRParams getPBRParams()
@@ -94,6 +127,7 @@ PBRParams getPBRParams()
 	params.hasEmissiveTexture          = u_pbr_params_2[0] > 0.0f;
 	params.hasMetallicRoughnessTexture = u_pbr_params_2[1] > 0.0f;
 	params.hasOcclusionTexture         = u_pbr_params_2[2] > 0.0f;
+	params.lightCount                  = u_pbr_scene_params.y;
 	return params;
 }
 
@@ -148,84 +182,178 @@ MaterialInfo getMaterialInfo(PBRParams params)
 		materialInfo.metallic            = sample_roughness.b * materialInfo.metallic;
 	}
 
-	materialInfo.f0 = mix(materialInfo.f0, materialInfo.baseColor.rgb, materialInfo.metallic);
+	materialInfo.f0             = mix(materialInfo.f0, materialInfo.baseColor.rgb, materialInfo.metallic);
+	materialInfo.diffuseColor   = mix(materialInfo.baseColor.rgb,  vec3(0), materialInfo.metallic);
+	materialInfo.alphaRoughness = materialInfo.perceptualRoughness * materialInfo.perceptualRoughness;
 	
 	return materialInfo;
 }
 
 PBRData getPBRData(PBRParams params, MaterialInfo info)
 {
-	vec3 diffuseColor;
-	diffuseColor  = info.baseColor.rgb * (1.0 - info.f0);
-	diffuseColor *= 1.0 - info.metallic;
-
-	float alphaRoughness = info.perceptualRoughness * info.perceptualRoughness;
-	float reflectance = max(max(info.f0.r, info.f0.g), info.f0.b);
-
-	float reflectance90 = clamp(reflectance * 25.0, 0.0, 1.0);
-	vec3 specularEnvironmentR0 = info.f0.rgb;
-	vec3 specularEnvironmentR90 = vec3(1.0, 1.0, 1.0) * reflectance90;
-
-	vec3 n = getNormal(params);
-	vec3 v = normalize(u_camera_position.xyz - var_position_world.xyz);    // Vector from surface point to camera
-	vec3 l = normalize(u_light_direction.xyz);     // Vector from surface point to light
-	vec3 h = normalize(l+v);                        // Half vector between both l and v
-	vec3 reflection = -normalize(reflect(v, n));
-	reflection.y *= -1.0f;
-
 	PBRData data;
-	data.NdotL = clamp(dot(n, l), 0.001, 1.0);
-	data.NdotV = clamp(abs(dot(n, v)), 0.001, 1.0);
-	data.NdotH = clamp(dot(n, h), 0.0, 1.0);
-	data.LdotH = clamp(dot(l, h), 0.0, 1.0);
-	data.VdotH = clamp(dot(v, h), 0.0, 1.0);
-	data.alphaRoughness = alphaRoughness;
-	data.diffuseColor = diffuseColor;
-	data.reflectance0 = specularEnvironmentR0;
-	data.reflectance90 = specularEnvironmentR90;
+	data.vertexPositionWorld     = var_position_world.xyz;
+	data.vertexDirectionToCamera = normalize(u_camera_position.xyz - var_position_world.xyz);
+	data.vertexNormal            = getNormal(params);
 	return data;
 }
 
-float microfacetDistribution(PBRData data)
+float clampedDot(vec3 x, vec3 y)
 {
-	float roughnessSq = data.alphaRoughness * data.alphaRoughness;
-	float f = (data.NdotH * roughnessSq - data.NdotH) * data.NdotH + 1.0;
-	return roughnessSq / (M_PI * f * f);
+	return clamp(dot(x, y), 0.0, 1.0);
 }
 
-vec3 specularReflection(PBRData data)
+vec3 F_Schlick(vec3 f0, vec3 f90, float VdotH)
 {
-	return data.reflectance0 + (data.reflectance90 - data.reflectance0) * pow(clamp(1.0 - data.VdotH, 0.0, 1.0), 5.0);
+	return f0 + (f90 - f0) * pow(clamp(1.0 - VdotH, 0.0, 1.0), 5.0);
 }
 
-vec3 diffuse(PBRData data)
+float F_Schlick(float f0, float f90, float VdotH)
 {
-	return data.diffuseColor / M_PI;
+	float x = clamp(1.0 - VdotH, 0.0, 1.0);
+	float x2 = x * x;
+	float x5 = x * x2 * x2;
+	return f0 + (f90 - f0) * x5;
 }
 
-float geometricOcclusion(PBRData data)
+float F_Schlick(float f0, float VdotH)
 {
-	float NdotL = data.NdotL;
-	float NdotV = data.NdotV;
-	float r = data.alphaRoughness;
-
-	float attenuationL = 2.0 * NdotL / (NdotL + sqrt(r * r + (1.0 - r * r) * (NdotL * NdotL)));
-	float attenuationV = 2.0 * NdotV / (NdotV + sqrt(r * r + (1.0 - r * r) * (NdotV * NdotV)));
-	return attenuationL * attenuationV;
+	float f90 = 1.0; //clamp(50.0 * f0, 0.0, 1.0);
+	return F_Schlick(f0, f90, VdotH);
 }
 
-vec3 getLighting(PBRData data)
+vec3 F_Schlick(vec3 f0, float f90, float VdotH)
 {
-	// Calculate the shading terms for the microfacet specular shading model
-	vec3 F  = specularReflection(data);
-	float G = geometricOcclusion(data);
-	float D = microfacetDistribution(data);
+	float x = clamp(1.0 - VdotH, 0.0, 1.0);
+	float x2 = x * x;
+	float x5 = x * x2 * x2;
+	return f0 + (f90 - f0) * x5;
+}
 
-	const vec3 lightColor = vec3(1.0);
-	vec3 diffuseContrib   = (1.0 - F) * diffuse(data);
-	vec3 specContrib      = F * G * D / (4.0 * data.NdotL * data.NdotV);
-	vec3 color            = data.NdotL * lightColor * (diffuseContrib + specContrib);
-	return color;
+vec3 F_Schlick(vec3 f0, float VdotH)
+{
+	float f90 = 1.0; //clamp(dot(f0, vec3(50.0 * 0.33)), 0.0, 1.0);
+	return F_Schlick(f0, f90, VdotH);
+}
+
+vec3 BRDF_lambertian(vec3 f0, vec3 f90, vec3 diffuseColor, float specularWeight, float VdotH)
+{
+	// see https://seblagarde.wordpress.com/2012/01/08/pi-or-not-to-pi-in-game-lighting-equation/
+	return (1.0 - specularWeight * F_Schlick(f0, f90, VdotH)) * (diffuseColor / M_PI);
+}
+
+float V_GGX(float NdotL, float NdotV, float alphaRoughness)
+{
+	float alphaRoughnessSq = alphaRoughness * alphaRoughness;
+
+	float GGXV = NdotL * sqrt(NdotV * NdotV * (1.0 - alphaRoughnessSq) + alphaRoughnessSq);
+	float GGXL = NdotV * sqrt(NdotL * NdotL * (1.0 - alphaRoughnessSq) + alphaRoughnessSq);
+
+	float GGX = GGXV + GGXL;
+	if (GGX > 0.0)
+	{
+		return 0.5 / GGX;
+	}
+	return 0.0;
+}
+
+float D_GGX(float NdotH, float alphaRoughness)
+{
+	float alphaRoughnessSq = alphaRoughness * alphaRoughness;
+	float f = (NdotH * NdotH) * (alphaRoughnessSq - 1.0) + 1.0;
+	return alphaRoughnessSq / (M_PI * f * f);
+}
+
+vec3 BRDF_specularGGX(vec3 f0, vec3 f90, float alphaRoughness, float specularWeight, float VdotH, float NdotL, float NdotV, float NdotH)
+{
+	vec3 F = F_Schlick(f0, f90, VdotH);
+	float Vis = V_GGX(NdotL, NdotV, alphaRoughness);
+	float D = D_GGX(NdotH, alphaRoughness);
+
+	return specularWeight * F * Vis * D;
+}
+
+vec3 getIBLRadianceLambertian(vec3 n, vec3 v, float roughness, vec3 diffuseColor, vec3 F0, float specularWeight)
+{
+	/*
+	float NdotV = clampedDot(n, v);
+	vec2 brdfSamplePoint = clamp(vec2(NdotV, roughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
+	vec2 f_ab = texture(u_GGXLUT, brdfSamplePoint).rg;
+
+	vec3 irradiance = getDiffuseLight(n);
+
+	// see https://bruop.github.io/ibl/#single_scattering_results at Single Scattering Results
+	// Roughness dependent fresnel, from Fdez-Aguera
+
+	vec3 Fr = max(vec3(1.0 - roughness), F0) - F0;
+	vec3 k_S = F0 + Fr * pow(1.0 - NdotV, 5.0);
+	vec3 FssEss = specularWeight * k_S * f_ab.x + f_ab.y; // <--- GGX / specular light contribution (scale it down if the specularWeight is low)
+
+	// Multiple scattering, from Fdez-Aguera
+	float Ems = (1.0 - (f_ab.x + f_ab.y));
+	vec3 F_avg = specularWeight * (F0 + (1.0 - F0) / 21.0);
+	vec3 FmsEms = Ems * FssEss * F_avg / (1.0 - F_avg * Ems);
+	vec3 k_D = diffuseColor * (1.0 - FssEss + FmsEms); // we use +FmsEms as indicated by the formula in the blog post (might be a typo in the implementation)
+
+	return (FmsEms + k_D) * irradiance;
+	*/
+	return vec3(0);
+}
+
+//#define LIGHT_IBL
+
+#define LIGHT_PUNCTUAL
+
+LightingInfo getLighting(PBRData data, PBRParams params, MaterialInfo mat)
+{
+	vec3 light_diffuse  = vec3(0.0);
+	vec3 light_specular = vec3(0.0);
+
+#ifdef LIGHT_IBL
+	light_specular += getIBLRadianceGGX(data.vertexNormal, data.vertexPositionWorld, mat.perceptualRoughness, mat.f0, mat.specularWeight);
+	light_diffuse  += getIBLRadianceLambertian(data.vertexNormal, data.vertexPositionWorld, mat.perceptualRoughness, mat.c_diff, mat.f0, mat.specularWeight);
+#endif
+
+#ifdef LIGHT_PUNCTUAL
+	for (int i=0; i < min(params.lightCount, MAX_LIGHT_COUNT); i++)
+	{
+		vec3 l_pos        = GET_LIGHT_POSITION(i);
+		vec3 l_dir        = GET_LIGHT_DIRECTION(i);
+		vec3 l_color      = GET_LIGHT_COLOR(i);
+		int  l_type       = GET_LIGHT_TYPE(i);
+		float l_intensity = GET_LIGHT_INTENSITY(i);
+		
+		vec3 l_vec;
+		if (l_type == LIGHT_TYPE_DIRECTIONAL)
+		{
+			l_vec = -l_dir;
+		}
+		else
+		{
+			l_vec = l_pos - data.vertexPositionWorld;
+		}
+
+		// BSTF
+		vec3 l      = normalize(l_vec);   // Direction from surface point to light
+		vec3 h      = normalize(l + data.vertexDirectionToCamera);          // Direction of the vector between l and v, called halfway vector
+		float NdotL = clampedDot(data.vertexNormal, l);
+		float NdotV = clampedDot(data.vertexNormal, data.vertexDirectionToCamera);
+		float NdotH = clampedDot(data.vertexNormal, h);
+		float LdotH = clampedDot(l, h);
+		float VdotH = clampedDot(data.vertexDirectionToCamera, h);
+
+		if (NdotL > 0.0 || NdotV > 0.0)
+		{
+			light_diffuse += l_intensity * NdotL *  BRDF_lambertian(mat.f0, mat.f90, mat.diffuseColor, mat.specularWeight, VdotH);
+			light_specular += l_intensity * NdotL * BRDF_specularGGX(mat.f0, mat.f90, mat.alphaRoughness, mat.specularWeight, VdotH, NdotL, NdotV, NdotH);
+		}
+	}
+#endif
+
+	LightingInfo light_info;
+	light_info.diffuse = light_diffuse;
+	light_info.specular = light_specular;
+	return light_info;
 }
 
 vec3 applyOcclusion(PBRParams params, vec3 colorIn)
@@ -273,15 +401,21 @@ vec4 tonemap(vec4 color)
 
 void main()
 {
-	PBRParams params = getPBRParams();
+	PBRParams params          = getPBRParams();
 	MaterialInfo materialInfo = getMaterialInfo(params);
+	PBRData pbrData           = getPBRData(params, materialInfo);
+	LightingInfo lightInfo    = getLighting(pbrData, params, materialInfo);
+	//lighting        = applyOcclusion(params, lighting);
+	//lighting        = applyEmissive(params, lighting);
 
-	PBRData pbrData = getPBRData(params, materialInfo);
-	vec3 lighting   = getLighting(pbrData);
-	lighting        = applyOcclusion(params, lighting);
-	lighting        = applyEmissive(params, lighting);
+	// gl_FragColor = tonemap(vec4(lighting, materialInfo.baseColor.a));
 
-	gl_FragColor = tonemap(vec4(lighting, materialInfo.baseColor.a));
+	//color = f_emissive + diffuse + f_specular;
+	//color = f_sheen + color * albedoSheenScaling;
+	//color = color * (1.0 - clearcoatFactor * clearcoatFresnel) + f_clearcoat;
+	
+	gl_FragColor.rgb = fromLinear(lightInfo.diffuse + lightInfo.specular);
+	gl_FragColor.a   = materialInfo.baseColor.a;
 
 #ifdef USE_DEBUG_DRAWING
 	gl_FragColor = applyDebugMode(gl_FragColor, materialInfo, pbrData);

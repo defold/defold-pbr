@@ -1,3 +1,5 @@
+local C = require 'main/constants'
+
 --
 -- projection that centers content with maintained aspect ratio and optional zoom
 --
@@ -54,14 +56,13 @@ function init(self)
     self.far = 1
     self.projection_fn = stretch_projection
 
-    self.DEBUG_MODE_NONE       = 0
-    self.DEBUG_MODE_BASE_COLOR = 1
-    self.DEBUG_MODE_TC_0       = 2
-    self.DEBUG_MODE_TC_1       = 3
-    self.DEBUG_MODE_ROUGHNESS  = 4
+    self.debug_mode = C.DEBUG_MODE.NONE
+    self.lights     = {}
+    self.camera_world = vmath.vector4()
 
-    self.pbr_constants = render.constant_buffer()
-    self.pbr_constants.u_pbr_debug_params =vmath.vector4(self.DEBUG_MODE_NONE)
+    self.pbr_constants                    = render.constant_buffer()
+    self.pbr_constants.u_pbr_debug_params = vmath.vector4(self.debug_mode)
+    self.pbr_constants.u_light_data       = {}
 end
 
 function update(self)
@@ -85,7 +86,14 @@ function update(self)
     render.draw(self.particle_pred)
     render.draw_debug3d()
 
-    --self.pbr_constants.u_pbr_debug_params =vmath.vector4(self.DEBUG_MODE_ROUGHNESS)
+    for k,v in pairs(self.lights) do
+        self.pbr_constants.u_light_data[k] = v
+    end
+
+    self.pbr_constants.u_pbr_scene_params = vmath.vector4(self.debug_mode, #self.lights, 0, 0)
+    self.pbr_constants.u_camera_position  = self.camera_world
+
+    -- render.enable_texture(unit, render_target, buffer_type)
     
     -- render models
     --
@@ -133,5 +141,27 @@ function on_message(self, message_id, message)
         self.near = message.near or -1
         self.far = message.far or 1
         self.projection_fn = fixed_fit_projection
+    elseif message_id == hash("debug_mode") then
+        self.debug_mode = C.DEBUG_MODE[message[1]]
+    elseif message_id == hash("set_camera_params") then
+        self.camera_world = vmath.vector4(message.world.x,message.world.y,message.world.z,0)
+    elseif message_id == hash("add_light") then
+        local l_mat = vmath.matrix4()
+        l_mat.m00 = message.position.x
+        l_mat.m10 = message.position.y
+        l_mat.m20 = message.position.z
+
+        l_mat.m01 = message.direction.x
+        l_mat.m11 = message.direction.y
+        l_mat.m21 = message.direction.z
+        
+        l_mat.m02 = message.color.x
+        l_mat.m12 = message.color.y
+        l_mat.m22 = message.color.z
+
+        l_mat.m03 = message.type
+        l_mat.m13 = message.intensity
+        
+        table.insert(self.lights, l_mat)
     end
 end
