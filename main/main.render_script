@@ -95,7 +95,11 @@ function update(self)
     self.pbr_constants.u_pbr_scene_params = vmath.vector4(self.debug_mode, #self.lights, 0, 0)
     self.pbr_constants.u_camera_position  = self.camera_world
 
-    -- render.enable_texture(unit, render_target, buffer_type)
+    render.enable_texture(0, self.pbr_params.irradiance_texture)
+    render.enable_texture(1, self.pbr_params.prefilter_texture)
+    render.enable_texture(2, self.pbr_params.brdf_lut)
+
+    --self.pbr_constants.u_roughness = vmath.vector4(self.roughness)
     
     -- render models
     --
@@ -104,6 +108,10 @@ function update(self)
     render.enable_state(render.STATE_DEPTH_TEST)
     render.set_depth_mask(true)
     render.draw(self.model_pred, { constants = self.pbr_constants })
+
+    render.disable_texture(0)
+    render.disable_texture(1)
+    render.disable_texture(2)
 
     -- debug rendering
     --
@@ -145,8 +153,11 @@ function on_message(self, message_id, message)
         self.projection_fn = fixed_fit_projection
     elseif message_id == hash("debug_mode") then
         self.debug_mode = C.DEBUG_MODE[message[1]]
-    elseif message_id == hash("set_camera_params") then
-        self.camera_world = vmath.vector4(message.world.x,message.world.y,message.world.z,0)
+    elseif message_id == hash("set_pbr_params") then
+        self.pbr_params   = message
+        self.camera_world = vmath.vector4(self.pbr_params.camera.world.x,self.pbr_params.camera.world.y,self.pbr_params.camera.world.z,0)
+    elseif message_id == hash("set_roughness") then
+        self.roughness = message.roughness
     elseif message_id == hash("add_light") then
         local l_mat = vmath.matrix4()
         l_mat.m00 = message.position.x

@@ -1,0 +1,6 @@
+right: "/defold-pbr/textures/blank_1x1.png"
+left: "/defold-pbr/textures/blank_1x1.png"
+top: "/defold-pbr/textures/blank_1x1.png"
+bottom: "/defold-pbr/textures/blank_1x1.png"
+front: "/defold-pbr/textures/blank_1x1.png"
+back: "/defold-pbr/textures/blank_1x1.png"

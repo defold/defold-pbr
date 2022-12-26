@@ -4,6 +4,7 @@
 #define DEBUG_MODE_TC_1       3
 #define DEBUG_MODE_ROUGHNESS  4
 #define DEBUG_MODE_METALLIC   5
+#define DEBUG_MODE_NORMALS    6
 
 #define USE_DEBUG_DRAWING
 #define USE_ROUGHNESS_MAP
@@ -11,6 +12,9 @@
 #define LIGHT_MAX_COUNT        4
 #define LIGHT_TYPE_DIRECTIONAL 0
 #define LIGHT_TYPE_POINT       1
+
+#define LIGHT_IBL
+//#define LIGHT_PUNCTUAL
 
 #define M_PI 3.141592653589793
 
@@ -20,7 +24,10 @@ varying mediump vec2 var_texcoord0;
 varying mediump vec2 var_texcoord1;
 varying mediump mat3 var_TBN;
 
-uniform mediump vec4 u_camera_position;
+// Environment inputs
+uniform lowp samplerCube tex_diffuse_irradiance;
+uniform lowp samplerCube tex_prefiltered_reflection;
+uniform lowp sampler2D   tex_brdflut;
 
 // Material inputs
 uniform lowp sampler2D tex_albedo;
@@ -29,7 +36,11 @@ uniform lowp sampler2D tex_metallic_roughness;
 uniform lowp sampler2D tex_occlusion;
 uniform lowp sampler2D tex_emissive;
 
-uniform mat4 u_light_data[LIGHT_MAX_COUNT];
+uniform mediump vec4 u_camera_position;
+
+#ifdef LIGHT_PUNCTUAL
+uniform mat4         u_light_data[LIGHT_MAX_COUNT];
+#endif
 
 // col 0: xyz: position
 // col 1: xyz: direction
@@ -102,6 +113,7 @@ vec4 applyDebugMode(vec4 color_in, MaterialInfo materialInfo, PBRData pbrData)
 	else if (debug_mode == DEBUG_MODE_TC_1)       return vec4(var_texcoord1, 0.0, 1.0);
 	else if (debug_mode == DEBUG_MODE_ROUGHNESS)  return vec4(vec3(materialInfo.perceptualRoughness), 1.0);
 	else if (debug_mode == DEBUG_MODE_METALLIC)   return vec4(vec3(materialInfo.metallic), 1.0);
+	else if (debug_mode == DEBUG_MODE_NORMALS)    return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
 	return color_in;
 }
 
@@ -273,36 +285,65 @@ vec3 BRDF_specularGGX(vec3 f0, vec3 f90, float alphaRoughness, float specularWei
 	return specularWeight * F * Vis * D;
 }
 
+vec3 getDiffuseLight(vec3 n)
+{
+	//return texture(u_LambertianEnvSampler, u_EnvRotation * n).rgb * u_EnvIntensity;
+	return textureCube(tex_diffuse_irradiance, n).rgb;
+}
+
+vec4 getSpecularSample(vec3 reflection, float lod)
+{
+	//return textureLod(u_GGXEnvSampler, u_EnvRotation * reflection, lod) * u_EnvIntensity;
+	return textureLod(tex_prefiltered_reflection, reflection, lod);
+}
+
 vec3 getIBLRadianceLambertian(vec3 n, vec3 v, float roughness, vec3 diffuseColor, vec3 F0, float specularWeight)
 {
-	/*
-	float NdotV = clampedDot(n, v);
+	float NdotV          = clampedDot(n, v);
 	vec2 brdfSamplePoint = clamp(vec2(NdotV, roughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
-	vec2 f_ab = texture(u_GGXLUT, brdfSamplePoint).rg;
+	vec2 f_ab            = texture2D(tex_brdflut, brdfSamplePoint).rg;
 
 	vec3 irradiance = getDiffuseLight(n);
 
 	// see https://bruop.github.io/ibl/#single_scattering_results at Single Scattering Results
 	// Roughness dependent fresnel, from Fdez-Aguera
 
-	vec3 Fr = max(vec3(1.0 - roughness), F0) - F0;
-	vec3 k_S = F0 + Fr * pow(1.0 - NdotV, 5.0);
+	vec3 Fr     = max(vec3(1.0 - roughness), F0) - F0;
+	vec3 k_S    = F0 + Fr * pow(1.0 - NdotV, 5.0);
 	vec3 FssEss = specularWeight * k_S * f_ab.x + f_ab.y; // <--- GGX / specular light contribution (scale it down if the specularWeight is low)
 
 	// Multiple scattering, from Fdez-Aguera
-	float Ems = (1.0 - (f_ab.x + f_ab.y));
-	vec3 F_avg = specularWeight * (F0 + (1.0 - F0) / 21.0);
+	float Ems   = (1.0 - (f_ab.x + f_ab.y));
+	vec3 F_avg  = specularWeight * (F0 + (1.0 - F0) / 21.0);
 	vec3 FmsEms = Ems * FssEss * F_avg / (1.0 - F_avg * Ems);
-	vec3 k_D = diffuseColor * (1.0 - FssEss + FmsEms); // we use +FmsEms as indicated by the formula in the blog post (might be a typo in the implementation)
+	vec3 k_D    = diffuseColor * (1.0 - FssEss + FmsEms); // we use +FmsEms as indicated by the formula in the blog post (might be a typo in the implementation)
 
 	return (FmsEms + k_D) * irradiance;
-	*/
-	return vec3(0);
 }
 
-//#define LIGHT_IBL
+vec3 getIBLRadianceGGX(vec3 n, vec3 v, float roughness, vec3 F0, float specularWeight)
+{
+	// TODO
+	const float u_MipCount = 9;
+	
+	float NdotV = clampedDot(n, v);
+	float lod = roughness * float(u_MipCount - 1);
+	vec3 reflection = normalize(reflect(-v, n));
 
-#define LIGHT_PUNCTUAL
+	vec2 brdfSamplePoint = clamp(vec2(NdotV, roughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
+	vec2 f_ab = texture(tex_brdflut, brdfSamplePoint).rg;
+	vec4 specularSample = getSpecularSample(reflection, lod);
+
+	vec3 specularLight = specularSample.rgb;
+
+	// see https://bruop.github.io/ibl/#single_scattering_results at Single Scattering Results
+	// Roughness dependent fresnel, from Fdez-Aguera
+	vec3 Fr = max(vec3(1.0 - roughness), F0) - F0;
+	vec3 k_S = F0 + Fr * pow(1.0 - NdotV, 5.0);
+	vec3 FssEss = k_S * f_ab.x + f_ab.y;
+
+	return specularWeight * specularLight * FssEss;
+}
 
 LightingInfo getLighting(PBRData data, PBRParams params, MaterialInfo mat)
 {
@@ -310,8 +351,8 @@ LightingInfo getLighting(PBRData data, PBRParams params, MaterialInfo mat)
 	vec3 light_specular = vec3(0.0);
 
 #ifdef LIGHT_IBL
-	light_specular += getIBLRadianceGGX(data.vertexNormal, data.vertexPositionWorld, mat.perceptualRoughness, mat.f0, mat.specularWeight);
-	light_diffuse  += getIBLRadianceLambertian(data.vertexNormal, data.vertexPositionWorld, mat.perceptualRoughness, mat.c_diff, mat.f0, mat.specularWeight);
+	light_diffuse  += getIBLRadianceLambertian(data.vertexNormal, data.vertexDirectionToCamera, mat.perceptualRoughness, mat.diffuseColor, mat.f0, mat.specularWeight);
+	light_specular += getIBLRadianceGGX(data.vertexNormal, data.vertexDirectionToCamera, mat.perceptualRoughness, mat.f0, mat.specularWeight);
 #endif
 
 #ifdef LIGHT_PUNCTUAL
@@ -351,7 +392,7 @@ LightingInfo getLighting(PBRData data, PBRParams params, MaterialInfo mat)
 #endif
 
 	LightingInfo light_info;
-	light_info.diffuse = light_diffuse;
+	light_info.diffuse  = light_diffuse;
 	light_info.specular = light_specular;
 	return light_info;
 }
@@ -405,16 +446,12 @@ void main()
 	MaterialInfo materialInfo = getMaterialInfo(params);
 	PBRData pbrData           = getPBRData(params, materialInfo);
 	LightingInfo lightInfo    = getLighting(pbrData, params, materialInfo);
-	//lighting        = applyOcclusion(params, lighting);
-	//lighting        = applyEmissive(params, lighting);
 
-	// gl_FragColor = tonemap(vec4(lighting, materialInfo.baseColor.a));
-
-	//color = f_emissive + diffuse + f_specular;
-	//color = f_sheen + color * albedoSheenScaling;
-	//color = color * (1.0 - clearcoatFactor * clearcoatFresnel) + f_clearcoat;
+	vec3 lighting             = lightInfo.diffuse + lightInfo.specular;
+	lighting                  = applyOcclusion(params, lighting);
+	lighting                  = applyEmissive(params, lighting);
 	
-	gl_FragColor.rgb = fromLinear(lightInfo.diffuse + lightInfo.specular);
+	gl_FragColor.rgb = fromLinear(lighting);
 	gl_FragColor.a   = materialInfo.baseColor.a;
 
 #ifdef USE_DEBUG_DRAWING

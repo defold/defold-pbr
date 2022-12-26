@@ -1,18 +1,80 @@
-function init(self)
-	print("envmap generation")
+go.property("roughness", 0)
 
-	local env_data = sys.load_resource("/pbr/envmaps/stpeters_probe.hdr")
-	local image_res = image.load(env_data, { desired_channels = 4 })
-
+function make_irradiance_texture(path, w, h)
 	local targs = {
-		type   = resource.TEXTURE_TYPE_2D,
-		width  = image_res.width,
-		height = image_res.height,
+		type   = resource.TEXTURE_TYPE_CUBE_MAP,
+		width  = w,
+		height = h,
 		format = resource.TEXTURE_FORMAT_RGBA32F
 	}
 
-	self.my_float_texture = resource.create_texture("/my_float_texture.texturec", targs)
-	resource.set_texture(self.my_float_texture, targs, image_res.buffer)
+	local tex_path = resource.create_texture("/pbr-irradiance.texturec", targs)
+	local data = resource.load(path)
 
-	go.set("/go1#model", "texture0", self.my_float_texture)
+	resource.set_texture(tex_path, targs, data)
+
+	return tex_path
+end
+
+function make_prefilter_texture(path, w, h, mipmaps)
+	local targs = {
+		type        = resource.TEXTURE_TYPE_CUBE_MAP,
+		width       = w,
+		height      = h,
+		format      = resource.TEXTURE_FORMAT_RGBA32F,
+		max_mipmaps = mipmaps
+	}
+
+	local tex_path = resource.create_texture("/pbr-prefilter.texturec", targs)
+	local slice_width = w
+	local slice_height = h
+	
+	for i = 0, mipmaps-1 do
+		local slice_path = path .. "_mm_" .. i .. ".bin"
+		local data       = resource.load(slice_path)
+		targs.mipmap     = i
+		targs.width      = slice_width
+		targs.height     = slice_height
+		resource.set_texture(tex_path, targs, data)
+		slice_width  = slice_height / 2
+		slice_height = slice_height / 2
+	end
+
+	return tex_path
+end
+
+function make_brdf_lut(path, w, h)
+	local targs = {
+		type   = resource.TEXTURE_TYPE_2D,
+		width  = w,
+		height = h,
+		format = resource.TEXTURE_FORMAT_RGBA32F
+	}
+
+	local tex_path = resource.create_texture("/pbr-brdf-lut.texturec", targs)
+	local data     = resource.load(path)
+
+	resource.set_texture(tex_path, targs, data)
+
+	return tex_path
+end
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	msg.post("@render:", "use_camera_projection")
+	msg.post("camera", "acquire_camera_focus")
+
+	self.camera = {}
+	self.pbr_irradiance_texture = make_irradiance_texture("/defold-pbr/assets/irradiance.bin", 64, 64)
+	self.pbr_prefilter_texture  = make_prefilter_texture("/defold-pbr/assets/prefilter", 256, 256, 9)
+	self.pbr_brdf_lut           = make_brdf_lut("/defold-pbr/assets/brdf_lut.bin", 512, 512)
+
+	go.set("/go1#model", "texture0", self.pbr_prefilter_texture)
+	go.animate("#", "roughness", go.PLAYBACK_LOOP_PINGPONG, 8, go.EASING_INOUTQUAD, 8)
+end
+
+function update(self, dt)
+	self.camera.world = go.get_world_position("/camera")
+	msg.post("@render:", "set_camera_params", self.camera)
+	msg.post("@render:", "set_roughness", { roughness = self.roughness })
 end

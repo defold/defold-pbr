@@ -5,7 +5,7 @@ attribute mediump vec3 color;
 attribute mediump vec2 texcoord0;
 attribute mediump vec2 texcoord1;
 
-uniform mediump mat4 u_mtx_worldview;
+//uniform mediump mat4 u_mtx_worldview;
 uniform mediump mat4 u_mtx_view;
 uniform mediump mat4 u_mtx_world;
 uniform mediump mat4 u_mtx_projection;
@@ -21,8 +21,10 @@ void main()
 {
 	vec4 p = u_mtx_world * vec4(position.xyz, 1.0);
 	vec3 T = normalize(vec3(u_mtx_world * vec4(tangent,    0.0)));
-	vec3 N = normalize(vec3(u_mtx_world * vec4(normal,     0.0)));
+	vec3 N = normalize((u_mtx_normal * vec4(normal, 0.0)).xyz); //normalize(vec3(u_mtx_world * vec4(normal,     0.0)));
 	vec3 B = cross(N, T);
+
+	N = normalize(vec3(u_mtx_world * vec4(normal,     0.0)));
 
 	var_TBN            = mat3(T, B, N);
 	var_normal         = N;
