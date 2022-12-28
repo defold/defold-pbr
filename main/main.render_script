@@ -40,6 +40,8 @@ function init(self)
     self.text_pred = render.predicate({"text"})
     self.particle_pred = render.predicate({"particle"})
     self.model_pred = render.predicate({"model"})
+
+    self.background_pred = render.predicate({"background"})
     
     self.clear_color = vmath.vector4(0, 0, 0, 0)
     self.clear_color.x = sys.get_config("render.clear_color_red", 0)
@@ -95,11 +97,13 @@ function update(self)
     self.pbr_constants.u_pbr_scene_params = vmath.vector4(self.debug_mode, #self.lights, 0, 0)
     self.pbr_constants.u_camera_position  = self.camera_world
 
+    --self.pbr_constants.u_roughness = vmath.vector4(self.roughness)
+    render.enable_texture(0, self.pbr_params.prefilter_texture)
+    render.draw(self.background_pred, { constants = self.pbr_constants })
+
     render.enable_texture(0, self.pbr_params.irradiance_texture)
     render.enable_texture(1, self.pbr_params.prefilter_texture)
     render.enable_texture(2, self.pbr_params.brdf_lut)
-
-    --self.pbr_constants.u_roughness = vmath.vector4(self.roughness)
     
     -- render models
     --
@@ -176,5 +180,10 @@ function on_message(self, message_id, message)
         l_mat.m13 = message.intensity
         
         table.insert(self.lights, l_mat)
+    elseif message_id == hash("set_light_params") then
+        local l_index = message.index
+        if message.intensity then
+            self.lights[l_index].m13 = message.intensity
+        end
     end
 end

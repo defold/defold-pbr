@@ -1,0 +1,26 @@
+
+// Positions can be world or local space, since world and normal
+// matrices are identity for world vertex space materials.
+// If world vertex space is selected, you can remove the
+// normal matrix multiplication for optimal performance.
+
+attribute highp vec4 position;
+
+uniform mediump mat4 mtx_worldview;
+uniform mediump mat4 mtx_proj;
+
+//uniform mediump vec4 u_camera_position;
+
+//uniform mediump mat4 mtx_normal;
+
+//uniform mediump mat4 mtx_view;
+//uniform mediump mat4 mtx_world;
+
+varying highp vec3 var_position;
+
+void main()
+{
+    var_position = position.xyz;
+    gl_Position = mtx_proj * mtx_worldview * vec4(position.xyz, 1.0);
+}
+

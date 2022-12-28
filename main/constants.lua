@@ -15,4 +15,19 @@ M.LIGHT_TYPE = {
 	POINT       = 1,
 }
 
+M.ENVIRONMENTS = {
+	{
+		name = "Newport Loft",
+		path = "/defold-pbr/assets/env_newport_loft"
+	},
+	{
+		name = "Limpopo Golf",
+		path = "/defold-pbr/assets/env_limpopo_golf"
+	},
+	{
+		name = "Reinforced Concrete",
+		path = "/defold-pbr/assets/env_reinforced_concrete"
+	}
+}
+
 return M

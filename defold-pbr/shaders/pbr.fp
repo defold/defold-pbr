@@ -14,7 +14,7 @@
 #define LIGHT_TYPE_POINT       1
 
 #define LIGHT_IBL
-//#define LIGHT_PUNCTUAL
+#define LIGHT_PUNCTUAL
 
 #define M_PI 3.141592653589793
 
@@ -385,8 +385,8 @@ LightingInfo getLighting(PBRData data, PBRParams params, MaterialInfo mat)
 
 		if (NdotL > 0.0 || NdotV > 0.0)
 		{
-			light_diffuse += l_intensity * NdotL *  BRDF_lambertian(mat.f0, mat.f90, mat.diffuseColor, mat.specularWeight, VdotH);
-			light_specular += l_intensity * NdotL * BRDF_specularGGX(mat.f0, mat.f90, mat.alphaRoughness, mat.specularWeight, VdotH, NdotL, NdotV, NdotH);
+			light_diffuse += l_intensity * l_color * NdotL *  BRDF_lambertian(mat.f0, mat.f90, mat.diffuseColor, mat.specularWeight, VdotH);
+			light_specular += l_intensity * l_color * NdotL * BRDF_specularGGX(mat.f0, mat.f90, mat.alphaRoughness, mat.specularWeight, VdotH, NdotL, NdotV, NdotH);
 		}
 	}
 #endif
