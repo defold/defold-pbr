@@ -1,10 +1,16 @@
-#define DEBUG_MODE_NONE       0
-#define DEBUG_MODE_BASE_COLOR 1
-#define DEBUG_MODE_TC_0       2
-#define DEBUG_MODE_TC_1       3
-#define DEBUG_MODE_ROUGHNESS  4
-#define DEBUG_MODE_METALLIC   5
-#define DEBUG_MODE_NORMALS    6
+
+#define GET_DEBUG_MODE() int(u_pbr_scene_params.x)
+
+#define DEBUG_MODE_NONE           0
+#define DEBUG_MODE_BASE_COLOR     1
+#define DEBUG_MODE_TC_0           2
+#define DEBUG_MODE_TC_1           3
+#define DEBUG_MODE_ROUGHNESS      4
+#define DEBUG_MODE_METALLIC       5
+#define DEBUG_MODE_NORMAL_TEXTURE 6
+#define DEBUG_MODE_NORMALS        7
+#define DEBUG_MODE_TANGENTS       8
+#define DEBUG_MODE_BITANGENTS     9
 
 #define USE_DEBUG_DRAWING
 #define USE_ROUGHNESS_MAP
@@ -20,6 +26,7 @@
 
 varying highp   vec4 var_position_world;
 varying mediump vec3 var_normal;
+varying mediump vec3 var_tangent;
 varying mediump vec2 var_texcoord0;
 varying mediump vec2 var_texcoord1;
 varying mediump mat3 var_TBN;
@@ -106,14 +113,17 @@ struct PBRData
 
 vec4 applyDebugMode(vec4 color_in, MaterialInfo materialInfo, PBRData pbrData)
 {
-	int debug_mode = int(u_pbr_scene_params.x);
-	if      (debug_mode == DEBUG_MODE_NONE)       return color_in;
-	else if (debug_mode == DEBUG_MODE_BASE_COLOR) return materialInfo.baseColor;
-	else if (debug_mode == DEBUG_MODE_TC_0)       return vec4(var_texcoord0, 0.0, 1.0);
-	else if (debug_mode == DEBUG_MODE_TC_1)       return vec4(var_texcoord1, 0.0, 1.0);
-	else if (debug_mode == DEBUG_MODE_ROUGHNESS)  return vec4(vec3(materialInfo.perceptualRoughness), 1.0);
-	else if (debug_mode == DEBUG_MODE_METALLIC)   return vec4(vec3(materialInfo.metallic), 1.0);
-	else if (debug_mode == DEBUG_MODE_NORMALS)    return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
+	int debug_mode = GET_DEBUG_MODE();
+	if      (debug_mode == DEBUG_MODE_NONE)           return color_in;
+	else if (debug_mode == DEBUG_MODE_BASE_COLOR)     return materialInfo.baseColor;
+	else if (debug_mode == DEBUG_MODE_TC_0)           return vec4(var_texcoord0, 0.0, 1.0);
+	else if (debug_mode == DEBUG_MODE_TC_1)           return vec4(var_texcoord1, 0.0, 1.0);
+	else if (debug_mode == DEBUG_MODE_ROUGHNESS)      return vec4(vec3(materialInfo.perceptualRoughness), 1.0);
+	else if (debug_mode == DEBUG_MODE_METALLIC)       return vec4(vec3(materialInfo.metallic), 1.0);
+	else if (debug_mode == DEBUG_MODE_NORMALS)        return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
+	else if (debug_mode == DEBUG_MODE_NORMAL_TEXTURE) return vec4(pbrData.vertexNormal, 1.0);
+	else if (debug_mode == DEBUG_MODE_TANGENTS)       return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
+	else if (debug_mode == DEBUG_MODE_BITANGENTS)     return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
 	return color_in;
 }
 
@@ -145,28 +155,46 @@ PBRParams getPBRParams()
 
 vec3 getNormal(PBRParams params)
 {
+	if (GET_DEBUG_MODE() == DEBUG_MODE_NORMALS)
+	{
+		return var_normal;
+	}
+	
+	if (GET_DEBUG_MODE() == DEBUG_MODE_TANGENTS)
+	{
+		return var_tangent;
+	}
+
+	if (GET_DEBUG_MODE() == DEBUG_MODE_BITANGENTS)
+	{
+		return cross(var_normal, var_tangent);
+	}
+	
 	if (params.hasNormalTexture)
 	{
-		lowp vec3 sample_normal = texture2D(tex_normal, var_texcoord0).rgb * 2.0 - 1.0;
+		lowp vec3 sample_normal = texture2D(tex_normal, var_texcoord0).rgb;
 
+		if (GET_DEBUG_MODE() == DEBUG_MODE_NORMAL_TEXTURE)
+		{
+			return sample_normal;
+		}
+
+		sample_normal = sample_normal * 2.0 - 1.0;
+		/*
 		vec3 q1 = dFdx(var_position_world.xyz);
 		vec3 q2 = dFdy(var_position_world.xyz);
 		vec2 st1 = dFdx(var_texcoord0);
 		vec2 st2 = dFdy(var_texcoord0);
+		*/
 
 		vec3 N = normalize(var_normal);
-		vec3 T = normalize(q1 * st2.t - q2 * st1.t);
+		vec3 T = normalize(var_tangent); // normalize(q1 * st2.t - q2 * st1.t);
 		vec3 B = -normalize(cross(N, T));
 		mat3 TBN = mat3(T, B, N);
-
 		return normalize(TBN * sample_normal);
 	}
+	
 	return var_normal;
-
-	/*
-	lowp vec3 normal = normalize(sample_normal);
-	return normalize(var_TBN * normal);
-	*/
 }
 
 MaterialInfo getMaterialInfo(PBRParams params)

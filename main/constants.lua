@@ -1,13 +1,16 @@
 local M = {}
 
 M.DEBUG_MODE = {
-	NONE       = 0,
-	BASE_COLOR = 1,
-	TC_0       = 2,
-	TC_1       = 3,
-	ROUGHNESS  = 4,
-	METALLIC   = 5,
-	NORMALS    = 6,
+	NONE           = 0,
+	BASE_COLOR     = 1,
+	TC_0           = 2,
+	TC_1           = 3,
+	ROUGHNESS      = 4,
+	METALLIC       = 5,
+	NORMAL_TEXTURE = 6,
+	NORMALS        = 7,
+	TANGENTS       = 8,
+	BITANGENTS     = 9,
 }
 
 M.LIGHT_TYPE = {
