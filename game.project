@@ -8,7 +8,7 @@ shared_state = 1
 [display]
 width = 960
 height = 640
-samples = 4
+samples = 8
 high_dpi = 1
 
 [android]

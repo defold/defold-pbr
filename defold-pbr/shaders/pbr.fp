@@ -11,6 +11,7 @@
 #define DEBUG_MODE_NORMALS        7
 #define DEBUG_MODE_TANGENTS       8
 #define DEBUG_MODE_BITANGENTS     9
+#define DEBUG_MODE_OCCLUSION      10
 
 #define USE_DEBUG_DRAWING
 #define USE_ROUGHNESS_MAP
@@ -102,6 +103,8 @@ struct LightingInfo
 {
 	vec3 diffuse;
 	vec3 specular;
+	float occlusion;
+	float occlusionStrength;
 };
 
 struct PBRData
@@ -110,22 +113,6 @@ struct PBRData
 	vec3 vertexDirectionToCamera;
 	vec3 vertexNormal;
 };
-
-vec4 applyDebugMode(vec4 color_in, MaterialInfo materialInfo, PBRData pbrData)
-{
-	int debug_mode = GET_DEBUG_MODE();
-	if      (debug_mode == DEBUG_MODE_NONE)           return color_in;
-	else if (debug_mode == DEBUG_MODE_BASE_COLOR)     return materialInfo.baseColor;
-	else if (debug_mode == DEBUG_MODE_TC_0)           return vec4(var_texcoord0, 0.0, 1.0);
-	else if (debug_mode == DEBUG_MODE_TC_1)           return vec4(var_texcoord1, 0.0, 1.0);
-	else if (debug_mode == DEBUG_MODE_ROUGHNESS)      return vec4(vec3(materialInfo.perceptualRoughness), 1.0);
-	else if (debug_mode == DEBUG_MODE_METALLIC)       return vec4(vec3(materialInfo.metallic), 1.0);
-	else if (debug_mode == DEBUG_MODE_NORMALS)        return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
-	else if (debug_mode == DEBUG_MODE_NORMAL_TEXTURE) return vec4(pbrData.vertexNormal, 1.0);
-	else if (debug_mode == DEBUG_MODE_TANGENTS)       return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
-	else if (debug_mode == DEBUG_MODE_BITANGENTS)     return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
-	return color_in;
-}
 
 vec4 toLinear(vec4 nonLinearIn)
 {
@@ -136,6 +123,23 @@ vec4 toLinear(vec4 nonLinearIn)
 vec3 fromLinear(vec3 linearIn)
 {
 	return pow(linearIn, vec3(1.0 / 2.2));
+}
+
+vec4 applyDebugMode(vec4 color_in, MaterialInfo materialInfo, LightingInfo lightInfo, PBRData pbrData)
+{
+	int debug_mode = GET_DEBUG_MODE();
+	if      (debug_mode == DEBUG_MODE_NONE)           return color_in;
+	else if (debug_mode == DEBUG_MODE_BASE_COLOR)     return vec4(fromLinear(materialInfo.baseColor.rgb), materialInfo.baseColor.a);
+	else if (debug_mode == DEBUG_MODE_TC_0)           return vec4(var_texcoord0, 0.0, 1.0);
+	else if (debug_mode == DEBUG_MODE_TC_1)           return vec4(var_texcoord1, 0.0, 1.0);
+	else if (debug_mode == DEBUG_MODE_ROUGHNESS)      return vec4(vec3(materialInfo.perceptualRoughness), 1.0);
+	else if (debug_mode == DEBUG_MODE_METALLIC)       return vec4(vec3(materialInfo.metallic), 1.0);
+	else if (debug_mode == DEBUG_MODE_NORMALS)        return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
+	else if (debug_mode == DEBUG_MODE_NORMAL_TEXTURE) return vec4(pbrData.vertexNormal, 1.0);
+	else if (debug_mode == DEBUG_MODE_TANGENTS)       return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
+	else if (debug_mode == DEBUG_MODE_BITANGENTS)     return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
+	else if (debug_mode == DEBUG_MODE_OCCLUSION)      return vec4(vec3(lightInfo.occlusion), 1.0);
+	return color_in;
 }
 
 PBRParams getPBRParams()
@@ -422,18 +426,21 @@ LightingInfo getLighting(PBRData data, PBRParams params, MaterialInfo mat)
 	LightingInfo light_info;
 	light_info.diffuse  = light_diffuse;
 	light_info.specular = light_specular;
+
+	light_info.occlusion = 1.0;
+	light_info.occlusionStrength = 1.0;
+
+	if (params.hasOcclusionTexture)
+	{
+		light_info.occlusion = texture2D(tex_occlusion, var_texcoord0).r;
+	}
+	
 	return light_info;
 }
 
-vec3 applyOcclusion(PBRParams params, vec3 colorIn)
+vec3 applyOcclusion(PBRParams params, LightingInfo lightInfo, vec3 colorIn)
 {
-	if (params.hasOcclusionTexture)
-	{
-		const float occlusionStrength = 1.0f;
-		float occlusion = texture2D(tex_occlusion, var_texcoord0).r;
-		return mix(colorIn, colorIn * occlusion, occlusionStrength);
-	}
-	return colorIn;
+	return mix(colorIn, colorIn * lightInfo.occlusion, lightInfo.occlusionStrength);
 }
 
 vec3 applyEmissive(PBRParams params, vec3 colorIn)
@@ -476,13 +483,13 @@ void main()
 	LightingInfo lightInfo    = getLighting(pbrData, params, materialInfo);
 
 	vec3 lighting             = lightInfo.diffuse + lightInfo.specular;
-	lighting                  = applyOcclusion(params, lighting);
+	lighting                  = applyOcclusion(params, lightInfo, lighting);
 	lighting                  = applyEmissive(params, lighting);
 	
 	gl_FragColor.rgb = fromLinear(lighting);
 	gl_FragColor.a   = materialInfo.baseColor.a;
 
 #ifdef USE_DEBUG_DRAWING
-	gl_FragColor = applyDebugMode(gl_FragColor, materialInfo, pbrData);
+	gl_FragColor = applyDebugMode(gl_FragColor, materialInfo, lightInfo, pbrData);
 #endif
 }

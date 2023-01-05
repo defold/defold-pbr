@@ -11,6 +11,7 @@ M.DEBUG_MODE = {
 	NORMALS        = 7,
 	TANGENTS       = 8,
 	BITANGENTS     = 9,
+	OCCLUSION      = 10,
 }
 
 M.LIGHT_TYPE = {
