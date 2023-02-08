@@ -14,11 +14,6 @@ M.DEBUG_MODE = {
 	OCCLUSION      = 10,
 }
 
-M.LIGHT_TYPE = {
-	DIRECTIONAL = 0,
-	POINT       = 1,
-}
-
 M.ENVIRONMENTS = {
 	{
 		name = "Newport Loft",

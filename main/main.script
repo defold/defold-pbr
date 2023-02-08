@@ -1,75 +1,5 @@
-local C = require 'main/constants'
-
-function make_irradiance_texture(w, h)
-	local targs = {
-		type   = resource.TEXTURE_TYPE_CUBE_MAP,
-		width  = w,
-		height = h,
-		format = resource.TEXTURE_FORMAT_RGBA32F
-	}
-
-	local tex_path = resource.create_texture("/pbr-irradiance.texturec", targs)
-	return tex_path
-end
-
-function make_prefilter_texture(w, h, mipmaps)
-	local targs = {
-		type        = resource.TEXTURE_TYPE_CUBE_MAP,
-		width       = w,
-		height      = h,
-		format      = resource.TEXTURE_FORMAT_RGBA32F,
-		max_mipmaps = mipmaps
-	}
-
-	return resource.create_texture("/pbr-prefilter.texturec", targs)
-end
-
-function make_brdf_lut(path, w, h)
-	local targs = {
-		type   = resource.TEXTURE_TYPE_2D,
-		width  = w,
-		height = h,
-		format = resource.TEXTURE_FORMAT_RGBA32F
-	}
-
-	local tex_path = resource.create_texture("/pbr-brdf-lut.texturec", targs)
-	local data     = resource.load(path)
-
-	resource.set_texture(tex_path, targs, data)
-	return resource.get_texture(tex_path)
-end
-
-function load_environment(self, env)
-	print("loading env " .. env.name)
-	resource.set_texture(self.pbr_irradiance_texture, {
-		type   = resource.TEXTURE_TYPE_CUBE_MAP,
-		width  = 64,
-		height = 64,
-		format = resource.TEXTURE_FORMAT_RGBA32F
-	}, resource.load(env.path .. "/irradiance.bin"))
-
-	local slice_width = 256
-	local slice_height = 256
-	local mipmaps = 9
-
-	for i = 0, mipmaps-1 do
-		local slice_path = env.path .. "/prefilter" .. "_mm_" .. i .. ".bin"
-		resource.set_texture(self.pbr_prefilter_texture, {
-			type        = resource.TEXTURE_TYPE_CUBE_MAP,
-			width       = slice_width,
-			height      = slice_height,
-			format      = resource.TEXTURE_FORMAT_RGBA32F,
-			mipmap      = i,
-		}, resource.load(slice_path))
-		slice_width  = slice_height / 2
-		slice_height = slice_height / 2
-	end
-
-	return {
-		irradiance = resource.get_texture(self.pbr_irradiance_texture),
-		prefilter  = resource.get_texture(self.pbr_prefilter_texture),
-	}
-end
+local C          = require 'main/constants'
+local defold_pbr = require 'defold-pbr/core'
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -77,15 +7,6 @@ function init(self)
 	msg.post("camera", "acquire_camera_focus")
 	msg.post("#preview", "load")
 
-	self.pbr_irradiance_texture = make_irradiance_texture(64, 64)
-	self.pbr_prefilter_texture  = make_prefilter_texture(256, 256, 9)
-	self.pbr_brdf_lut           = make_brdf_lut("/defold-pbr/assets/brdf_lut.bin", 512, 512)
-	self.pbr_environment        = load_environment(self, C.ENVIRONMENTS[1])
-
-	self.pbr_params = {
-		camera = {}
-	}
-	
 	local key_light_qdir = vmath.quat(
 		-0.3535534,
 		-0.353553385,
@@ -101,30 +22,32 @@ function init(self)
 	local key_light_dir  = vmath.rotate(key_light_qdir, vmath.vector3(0,0,-1))
 	local fill_light_dir = vmath.rotate(fill_light_qdir, vmath.vector3(0,0,-1))
 
-	msg.post("@render:", "add_light", {
+	-- Initialize a PBR ctx
+	self.pbr = defold_pbr.initialize()
+
+	-- Load a default environment
+	defold_pbr.set_environment(self.pbr, C.ENVIRONMENTS[1])
+
+	-- Add lights
+	defold_pbr.add_light_directional(self.pbr, {
 		position  = vmath.vector3(),
 		direction = vmath.normalize(key_light_dir),
 		color     = vmath.vector3(0.5,0.5,1),
 		intensity = 1,
-		type      = C.LIGHT_TYPE.DIRECTIONAL
 	})
-	msg.post("@render:", "add_light", {
+
+	defold_pbr.add_light_directional(self.pbr, {
 		position  = vmath.vector3(),
 		direction = vmath.normalize(fill_light_dir),
 		color     = vmath.vector3(1,0.5,0),
-		intensity = 0.5,
-		type      = C.LIGHT_TYPE.DIRECTIONAL
+		intensity = 0.5
 	})
-
-	self.background = go.get_id("/background")
 end
 
 function update(self, dt)
-	self.pbr_params.brdf_lut           = self.pbr_brdf_lut
-	self.pbr_params.irradiance_texture = self.pbr_environment.irradiance
-	self.pbr_params.prefilter_texture  = self.pbr_environment.prefilter
-	self.pbr_params.camera.world       = go.get_world_position("/camera")
-	msg.post("@render:", "set_pbr_params", self.pbr_params)
+	defold_pbr.update(self.pbr, {
+		camera_world = go.get_world_position("/camera")
+	})
 end
 
 function on_message(self, message_id, message, sender)
@@ -133,6 +56,6 @@ function on_message(self, message_id, message, sender)
 		msg.post(sender, "enable")
 	end
 	if message_id == hash("set_env") then
-		self.pbr_environment = load_environment(self, C.ENVIRONMENTS[message[1]])
+		defold_pbr.set_environment(self.pbr, C.ENVIRONMENTS[message[1]])
 	end
 end

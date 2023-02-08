@@ -1,6 +1,6 @@
 local C = require 'main/constants'
 
-local pbr = require 'defold-pbr/api'
+local defold_pbr = require 'defold-pbr/core'
 
 --
 -- projection that centers content with maintained aspect ratio and optional zoom
@@ -90,6 +90,7 @@ function update(self)
     render.draw(self.particle_pred)
     render.draw_debug3d()
 
+    -- PBR
     for k,v in pairs(self.lights) do
         self.pbr_constants.u_light_data[k] = v
     end
@@ -159,7 +160,7 @@ function on_message(self, message_id, message)
         self.debug_mode = C.DEBUG_MODE[message[1]]
     elseif message_id == hash("set_pbr_params") then
         self.pbr_params   = message
-        self.camera_world = vmath.vector4(self.pbr_params.camera.world.x,self.pbr_params.camera.world.y,self.pbr_params.camera.world.z,0)
+        self.camera_world = vmath.vector4(self.pbr_params.camera_world.x,self.pbr_params.camera_world.y,self.pbr_params.camera_world.z,0)
     elseif message_id == hash("set_roughness") then
         self.roughness = message.roughness
     elseif message_id == hash("add_light") then
