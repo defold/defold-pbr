@@ -1,5 +1,5 @@
-local C          = require 'main/constants'
-local defold_pbr = require 'defold-pbr/core'
+local C   = require 'main/constants'
+local PBR = require 'defold-pbr/core'
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
@@ -23,20 +23,20 @@ function init(self)
 	local fill_light_dir = vmath.rotate(fill_light_qdir, vmath.vector3(0,0,-1))
 
 	-- Initialize a PBR ctx
-	self.pbr = defold_pbr.initialize()
+	self.pbr = PBR.initialize()
 
 	-- Load a default environment
-	defold_pbr.set_environment(self.pbr, C.ENVIRONMENTS[1])
+	PBR.set_environment(self.pbr, C.ENVIRONMENTS[1])
 
 	-- Add lights
-	defold_pbr.add_light_directional(self.pbr, {
+	PBR.add_light_directional(self.pbr, {
 		position  = vmath.vector3(),
 		direction = vmath.normalize(key_light_dir),
 		color     = vmath.vector3(0.5,0.5,1),
 		intensity = 1,
 	})
 
-	defold_pbr.add_light_directional(self.pbr, {
+	PBR.add_light_directional(self.pbr, {
 		position  = vmath.vector3(),
 		direction = vmath.normalize(fill_light_dir),
 		color     = vmath.vector3(1,0.5,0),
@@ -45,7 +45,7 @@ function init(self)
 end
 
 function update(self, dt)
-	defold_pbr.update(self.pbr, {
+	PBR.update(self.pbr, {
 		camera_world = go.get_world_position("/camera")
 	})
 end
@@ -56,6 +56,6 @@ function on_message(self, message_id, message, sender)
 		msg.post(sender, "enable")
 	end
 	if message_id == hash("set_env") then
-		defold_pbr.set_environment(self.pbr, C.ENVIRONMENTS[message[1]])
+		PBR.set_environment(self.pbr, C.ENVIRONMENTS[message[1]])
 	end
 end
