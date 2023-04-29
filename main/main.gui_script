@@ -54,8 +54,9 @@ end
 
 function update_env_selection(self)
 	local height = 24
+	local right_margin = 256
 	local start_y = gui.get_height() - height
-	local start_x = gui.get_width() - 128
+	local start_x = gui.get_width() - right_margin
 	local i = 0
 	local text_scale = 0.3
 
