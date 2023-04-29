@@ -30,14 +30,12 @@ function init(self)
 
 	-- Add lights
 	PBR.add_light_directional(self.pbr, {
-		position  = vmath.vector3(),
 		direction = vmath.normalize(key_light_dir),
 		color     = vmath.vector3(0.5,0.5,1),
 		intensity = 1,
 	})
 
 	PBR.add_light_directional(self.pbr, {
-		position  = vmath.vector3(),
 		direction = vmath.normalize(fill_light_dir),
 		color     = vmath.vector3(1,0.5,0),
 		intensity = 0.5
