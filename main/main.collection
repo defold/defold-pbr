@@ -77,7 +77,7 @@ embedded_instances {
   "  }\n"
   "  properties {\n"
   "    id: \"movement_speed\"\n"
-  "    value: \"15.0\"\n"
+  "    value: \"10.0\"\n"
   "    type: PROPERTY_TYPE_NUMBER\n"
   "  }\n"
   "  property_decls {\n"
@@ -110,7 +110,7 @@ embedded_instances {
   position {
     x: 0.0
     y: 0.0
-    z: 10.0
+    z: 5.0
   }
   rotation {
     x: 0.0
