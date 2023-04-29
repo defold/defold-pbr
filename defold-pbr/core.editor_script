@@ -30,6 +30,14 @@ local function strip_ext(str)
     return string.sub(str, 1, last_ext-1)
 end
 
+local function get_platform_exe()
+    local platform_to_binary = {}
+    platform_to_binary["x86_64-macos"] = "pbr-utils-macos"
+    platform_to_binary["x86_64-win32"] = "pbr-utils-windows.exe"
+    platform_to_binary["x86_64-linux"] = "pbr-utils-linux"
+    return platform_to_binary[editor.platform]
+end
+
 local CMD_CREATE_ASSETS = {
     label     = "Defold PBR - Create Environment Assets",
     locations = {"Assets"},
@@ -54,7 +62,7 @@ local CMD_CREATE_ASSETS = {
             {
                 action = "shell",
                 command = {
-                    "defold-pbr/tools/pbr-utils", input_path, directory,
+                    "defold-pbr/tools/" .. get_platform_exe(), input_path, directory,
                     "--generate", "irradiance",
                     "--generate", "prefilter",
                     "--meta-data", "--verbose"
