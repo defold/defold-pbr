@@ -4,8 +4,34 @@ local function ends_with(str, ending)
     return ending == "" or str:sub(-#ending) == ending
 end
 
+function starts_with(str, start)
+    return string.sub(str,1,string.len(start)) == start
+end
+
+local function trim_leading_slash(str)
+    if starts_with(str, "/") then
+        return string.sub(str, 2)
+    end
+    return str
+end
+
+local function get_base_file_name(str)
+    local last_slash = string.find(str, "/[^/]*$")
+    return string.sub(str, last_slash + 1)
+end
+
+local function get_base_directory(str)
+    local last_slash = string.find(str, "/[^/]*$")
+    return trim_leading_slash(string.sub(str, 1, last_slash))
+end
+
+local function strip_ext(str)
+    local last_ext = string.find(str, "[.][^.]*$")
+    return string.sub(str, 1, last_ext-1)
+end
+
 local CMD_CREATE_ASSETS = {
-    label     = "Create Environment Assets",
+    label     = "Defold PBR - Create Environment Assets",
     locations = {"Assets"},
     query     = {
         selection = {
@@ -14,16 +40,24 @@ local CMD_CREATE_ASSETS = {
         }
     },
     active = function(opts)
-        local path = editor.get(opts.selection, "path")
-        return ends_with(path, ".hdr")
+        return ends_with(editor.get(opts.selection, "path"), ".hdr")
     end,
     run = function(opts)
-        local text = editor.get(opts.selection, "text")
+        local input_path = trim_leading_slash(editor.get(opts.selection, "path"))
+        local directory = get_base_directory(input_path) .. strip_ext(get_base_file_name(input_path))
         
-        return {{
+        return {
+            {
+                action = "shell",
+                command = { "mkdir", "-p", directory }
+            },
+            {
                 action = "shell",
                 command = {
-                    "python.exe", "--version"
+                    "defold-pbr/tools/pbr-utils", input_path, directory,
+                    "--generate", "irradiance",
+                    "--generate", "prefilter",
+                    "--meta-data", "--verbose"
                 }
             }
         }
