@@ -34,3 +34,11 @@ mouse_trigger {
   input: MOUSE_BUTTON_2
   action: "VANTAGE_MOUSE_2"
 }
+mouse_trigger {
+  input: MOUSE_WHEEL_UP
+  action: "VANTAGE_WHEEL_UP"
+}
+mouse_trigger {
+  input: MOUSE_WHEEL_DOWN
+  action: "VANTAGE_WHEEL_DOWN"
+}

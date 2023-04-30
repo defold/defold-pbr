@@ -44,7 +44,8 @@ end
 
 function update(self, dt)
 	PBR.update(self.pbr, {
-		camera_world = go.get_world_position("/camera")
+		camera_world = go.get_world_position("/camera"),
+		exposure = self.exposure
 	})
 end
 
@@ -55,5 +56,7 @@ function on_message(self, message_id, message, sender)
 	end
 	if message_id == hash("set_env") then
 		PBR.set_environment(self.pbr, C.ENVIRONMENTS[message[1]])
+	elseif message_id == hash("set_exposure") then
+		self.exposure = message[1]
 	end
 end

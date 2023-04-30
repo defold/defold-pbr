@@ -15,7 +15,6 @@ M.DEBUG_MODE = {
 }
 
 M.ENVIRONMENTS = {
-	--[[
 	{
 		name = "Newport Loft",
 		path = "/defold-pbr/assets/env_newport_loft"
@@ -28,7 +27,6 @@ M.ENVIRONMENTS = {
 		name = "Reinforced Concrete",
 		path = "/defold-pbr/assets/env_reinforced_concrete"
 	},
-	--]]
 	require "assets/environment-maps/modern_buildings_2_2k/meta",
 	require "assets/environment-maps/solitude_interior_2k/meta"
 }

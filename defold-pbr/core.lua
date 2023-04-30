@@ -57,6 +57,7 @@ M.update = function(ctx, update_params)
 	ctx.render_args.irradiance_texture = ctx.handle_irradiance
 	ctx.render_args.prefilter_texture  = ctx.handle_prefilter
 	ctx.render_args.camera_world       = update_params.camera_world
+	ctx.render_args.exposure           = update_params.exposure
 	msg.post("@render:", "set_pbr_params", ctx.render_args)
 end
 

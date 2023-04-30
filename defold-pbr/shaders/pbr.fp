@@ -50,16 +50,21 @@ uniform mediump vec4 u_camera_position;
 uniform mat4         u_light_data[LIGHT_MAX_COUNT];
 #endif
 
+#include "common.glsl"
+
 // col 0: xyz: position
 // col 1: xyz: direction
 // col 2: xyz: color
 // col 3: x: type
 
+#define GET_LIGHT_COUNT()                u_pbr_scene_params.y
 #define GET_LIGHT_POSITION(light_index)  u_light_data[light_index][0].xyz 
 #define GET_LIGHT_DIRECTION(light_index) u_light_data[light_index][1].xyz 
 #define GET_LIGHT_COLOR(light_index)     u_light_data[light_index][2].xyz 
 #define GET_LIGHT_TYPE(light_index)      int(u_light_data[light_index][3][0])
 #define GET_LIGHT_INTENSITY(light_index) u_light_data[light_index][3][1]
+
+#define GET_CAMERA_EXPOSURE() u_pbr_scene_params.z
 
 uniform lowp vec4 u_pbr_params_0;
 uniform lowp vec4 u_pbr_params_1;
@@ -114,17 +119,6 @@ struct PBRData
 	vec3 vertexNormal;
 };
 
-vec4 toLinear(vec4 nonLinearIn)
-{
-	vec3 linearOut = pow(nonLinearIn.rgb, vec3(2.2));
-	return vec4(linearOut, nonLinearIn.a);
-}
-
-vec3 fromLinear(vec3 linearIn)
-{
-	return pow(linearIn, vec3(1.0 / 2.2));
-}
-
 vec4 applyDebugMode(vec4 color_in, MaterialInfo materialInfo, LightingInfo lightInfo, PBRData pbrData)
 {
 	int debug_mode = GET_DEBUG_MODE();
@@ -153,7 +147,7 @@ PBRParams getPBRParams()
 	params.hasEmissiveTexture          = u_pbr_params_2[0] > 0.0f;
 	params.hasMetallicRoughnessTexture = u_pbr_params_2[1] > 0.0f;
 	params.hasOcclusionTexture         = u_pbr_params_2[2] > 0.0f;
-	params.lightCount                  = u_pbr_scene_params.y;
+	params.lightCount                  = GET_LIGHT_COUNT();
 	return params;
 }
 
@@ -453,28 +447,6 @@ vec3 applyEmissive(PBRParams params, vec3 colorIn)
 	return colorIn;
 }
 
-vec3 Uncharted2Tonemap(vec3 color)
-{
-	float A = 0.15;
-	float B = 0.50;
-	float C = 0.10;
-	float D = 0.20;
-	float E = 0.02;
-	float F = 0.30;
-	float W = 11.2;
-	return ((color*(A*color+C*B)+D*E)/(color*(A*color+B)+D*F))-E/F;
-}
-
-vec4 tonemap(vec4 color)
-{
-	const float exposure = 1.0f;
-	const float invGamma = 1.0 / 2.2;
-	
-	vec3 outcol = Uncharted2Tonemap(color.rgb * 1.0);
-	outcol = outcol * (1.0f / Uncharted2Tonemap(vec3(11.2f)));	
-	return vec4(pow(outcol, vec3(invGamma)), color.a);
-}
-
 void main()
 {
 	PBRParams params          = getPBRParams();
@@ -486,7 +458,7 @@ void main()
 	lighting                  = applyOcclusion(params, lightInfo, lighting);
 	lighting                  = applyEmissive(params, lighting);
 	
-	gl_FragColor.rgb = fromLinear(lighting);
+	gl_FragColor.rgb = exposure(lighting, GET_CAMERA_EXPOSURE());
 	gl_FragColor.a   = materialInfo.baseColor.a;
 
 #ifdef USE_DEBUG_DRAWING

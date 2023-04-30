@@ -60,9 +60,10 @@ function init(self)
     self.far = 1
     self.projection_fn = stretch_projection
 
-    self.debug_mode = C.DEBUG_MODE.NONE
-    self.lights     = {}
-    self.camera_world = vmath.vector4()
+    self.debug_mode      = C.DEBUG_MODE.NONE
+    self.lights          = {}
+    self.camera_world    = vmath.vector4()
+    self.camera_exposure = 1
 
     self.pbr_constants                    = render.constant_buffer()
     self.pbr_constants.u_pbr_debug_params = vmath.vector4(self.debug_mode)
@@ -95,7 +96,7 @@ function update(self)
         self.pbr_constants.u_light_data[k] = v
     end
 
-    self.pbr_constants.u_pbr_scene_params = vmath.vector4(self.debug_mode, #self.lights, 0, 0)
+    self.pbr_constants.u_pbr_scene_params = vmath.vector4(self.debug_mode, #self.lights, self.camera_exposure, 0)
     self.pbr_constants.u_camera_position  = self.camera_world
 
     --self.pbr_constants.u_roughness = vmath.vector4(self.roughness)
@@ -161,6 +162,9 @@ function on_message(self, message_id, message)
     elseif message_id == hash("set_pbr_params") then
         self.pbr_params   = message
         self.camera_world = vmath.vector4(self.pbr_params.camera_world.x,self.pbr_params.camera_world.y,self.pbr_params.camera_world.z,0)
+        if message.exposure ~= nil then
+            self.camera_exposure = message.exposure
+        end
     elseif message_id == hash("set_roughness") then
         self.roughness = message.roughness
     elseif message_id == hash("add_light") then
