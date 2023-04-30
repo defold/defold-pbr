@@ -65,8 +65,6 @@ function update_debug_wids(self)
 		gui.set_scale(v.radio, vmath.vector3(text_scale, text_scale, 1))
 		gui.set_scale(v.label, vmath.vector3(text_scale, text_scale, 1))
 		gui.set_text(v.label, v.name)
-
-		pprint(k, v.name)
 	end
 end
 
@@ -94,6 +92,9 @@ function update(self, dt)
 end
 
 function on_input(self, action_id, action)
+	--------------------------
+	-- Update debug selection
+	--------------------------
 	local debug_mode = self.debug_mode
 	for k,v in pairs(self.debug_mode_wid) do
 		self.debug_mode = dirtylarry:radio(v.name, action_id, action, v.name, self.debug_mode)
@@ -103,6 +104,9 @@ function on_input(self, action_id, action)
 		msg.post("@render:", "debug_mode", { self.debug_mode })
 	end
 
+	--------------------------
+	-- Update env selection
+	--------------------------
 	local env = self.env_selection
 	for k,v in pairs(self.env_selection_wid) do
 		self.env_selection = dirtylarry:radio(k, action_id, action, k, self.env_selection)

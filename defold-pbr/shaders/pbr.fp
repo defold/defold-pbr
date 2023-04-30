@@ -1,6 +1,3 @@
-
-#define GET_DEBUG_MODE() int(u_pbr_scene_params.x)
-
 #define DEBUG_MODE_NONE           0
 #define DEBUG_MODE_BASE_COLOR     1
 #define DEBUG_MODE_TC_0           2
@@ -47,17 +44,22 @@ uniform lowp sampler2D tex_emissive;
 uniform mediump vec4 u_camera_position;
 
 #ifdef LIGHT_PUNCTUAL
-uniform mat4         u_light_data[LIGHT_MAX_COUNT];
+	uniform mat4 u_light_data[LIGHT_MAX_COUNT];
 #endif
 
-#include "common.glsl"
+uniform lowp vec4 u_pbr_params_0;
+uniform lowp vec4 u_pbr_params_1;
+uniform lowp vec4 u_pbr_params_2;
+uniform lowp vec4 u_pbr_scene_params;
+
+#include "/defold-pbr/shaders/common.glsl"
 
 // col 0: xyz: position
 // col 1: xyz: direction
 // col 2: xyz: color
 // col 3: x: type
 
-#define GET_LIGHT_COUNT()                u_pbr_scene_params.y
+#define GET_LIGHT_COUNT()                int(u_pbr_scene_params.y)
 #define GET_LIGHT_POSITION(light_index)  u_light_data[light_index][0].xyz 
 #define GET_LIGHT_DIRECTION(light_index) u_light_data[light_index][1].xyz 
 #define GET_LIGHT_COLOR(light_index)     u_light_data[light_index][2].xyz 
@@ -66,10 +68,7 @@ uniform mat4         u_light_data[LIGHT_MAX_COUNT];
 
 #define GET_CAMERA_EXPOSURE() u_pbr_scene_params.z
 
-uniform lowp vec4 u_pbr_params_0;
-uniform lowp vec4 u_pbr_params_1;
-uniform lowp vec4 u_pbr_params_2;
-uniform lowp vec4 u_pbr_scene_params;
+#define GET_DEBUG_MODE() int(u_pbr_scene_params.x)
 
 struct Light
 {
@@ -80,15 +79,15 @@ struct Light
 
 struct PBRParams
 {
-	vec4 baseColor;
+	vec4  baseColor;
 	float metallic;
 	float roughness;
-	float lightCount;
-	bool hasAlbedoTexture;
-	bool hasNormalTexture;
-	bool hasEmissiveTexture;
-	bool hasMetallicRoughnessTexture;
-	bool hasOcclusionTexture;
+	int   lightCount;
+	bool  hasAlbedoTexture;
+	bool  hasNormalTexture;
+	bool  hasEmissiveTexture;
+	bool  hasMetallicRoughnessTexture;
+	bool  hasOcclusionTexture;
 };
 
 struct MaterialInfo
@@ -128,10 +127,10 @@ vec4 applyDebugMode(vec4 color_in, MaterialInfo materialInfo, LightingInfo light
 	else if (debug_mode == DEBUG_MODE_TC_1)           return vec4(var_texcoord1, 0.0, 1.0);
 	else if (debug_mode == DEBUG_MODE_ROUGHNESS)      return vec4(vec3(materialInfo.perceptualRoughness), 1.0);
 	else if (debug_mode == DEBUG_MODE_METALLIC)       return vec4(vec3(materialInfo.metallic), 1.0);
-	else if (debug_mode == DEBUG_MODE_NORMALS)        return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
+	else if (debug_mode == DEBUG_MODE_NORMALS)        return vec4((pbrData.vertexNormal + 1.0) * 0.5, 1.0);
 	else if (debug_mode == DEBUG_MODE_NORMAL_TEXTURE) return vec4(pbrData.vertexNormal, 1.0);
-	else if (debug_mode == DEBUG_MODE_TANGENTS)       return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
-	else if (debug_mode == DEBUG_MODE_BITANGENTS)     return vec4((pbrData.vertexNormal + 1) * 0.5, 1.0);
+	else if (debug_mode == DEBUG_MODE_TANGENTS)       return vec4((pbrData.vertexNormal + 1.0) * 0.5, 1.0);
+	else if (debug_mode == DEBUG_MODE_BITANGENTS)     return vec4((pbrData.vertexNormal + 1.0) * 0.5, 1.0);
 	else if (debug_mode == DEBUG_MODE_OCCLUSION)      return vec4(vec3(lightInfo.occlusion), 1.0);
 	return color_in;
 }
@@ -350,10 +349,10 @@ vec3 getIBLRadianceLambertian(vec3 n, vec3 v, float roughness, vec3 diffuseColor
 vec3 getIBLRadianceGGX(vec3 n, vec3 v, float roughness, vec3 F0, float specularWeight)
 {
 	// TODO
-	const float u_MipCount = 9;
+	const float u_MipCount = 9.0;
 	
 	float NdotV = clampedDot(n, v);
-	float lod = roughness * float(u_MipCount - 1);
+	float lod = roughness * float(u_MipCount - 1.0);
 	vec3 reflection = normalize(reflect(-v, n));
 
 	vec2 brdfSamplePoint = clamp(vec2(NdotV, roughness), vec2(0.0, 0.0), vec2(1.0, 1.0));
