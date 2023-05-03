@@ -52,7 +52,7 @@ uniform lowp vec4 u_pbr_params_1;
 uniform lowp vec4 u_pbr_params_2;
 uniform lowp vec4 u_pbr_scene_params;
 
-#include "/defold-pbr/shaders/common.glsl"
+#include "/defold-pbr/shaders/pbr_common.glsl"
 
 // col 0: xyz: position
 // col 1: xyz: direction

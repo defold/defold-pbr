@@ -3,7 +3,7 @@ uniform lowp samplerCube tex0;
 
 uniform lowp vec4 u_pbr_scene_params;
 
-#include "/defold-pbr/shaders/common.glsl"
+#include "/defold-pbr/shaders/pbr_common.glsl"
 
 void main()
 {

@@ -1,3 +1,5 @@
+#ifndef PBR_COMMON
+#define PBR_COMMON
 
 const float g_gamma = 2.2;
 
@@ -17,3 +19,5 @@ vec3 exposure(vec3 hdrIn, float expvalue)
 	vec3 mapped = vec3(1.0) - exp(-hdrIn * expvalue);
 	return pow(mapped, vec3(1.0 / g_gamma));
 }
+
+#endif // PBR_COMMON
