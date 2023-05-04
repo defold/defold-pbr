@@ -11,7 +11,7 @@ M.make_irradiance_texture = function(w, h)
 		type   = resource.TEXTURE_TYPE_CUBE_MAP,
 		width  = w,
 		height = h,
-		format = resource.TEXTURE_FORMAT_RGBA32F
+		format = resource.TEXTURE_FORMAT_RGBA16F
 	}
 	return resource.create_texture("/defold-pbr/irradiance.texturec", targs)
 end
@@ -21,7 +21,7 @@ M.make_prefilter_texture = function(w, h, mipmaps)
 		type        = resource.TEXTURE_TYPE_CUBE_MAP,
 		width       = w,
 		height      = h,
-		format      = resource.TEXTURE_FORMAT_RGBA32F,
+		format      = resource.TEXTURE_FORMAT_RGBA16F,
 		max_mipmaps = mipmaps
 	}
 	return resource.create_texture("/defold-pbr/prefilter.texturec", targs)
@@ -46,7 +46,7 @@ M.load_environment = function(ctx, env)
 		type   = resource.TEXTURE_TYPE_CUBE_MAP,
 		width  = ctx.params.irradiance.width,
 		height = ctx.params.irradiance.height,
-		format = resource.TEXTURE_FORMAT_RGBA32F
+		format = resource.TEXTURE_FORMAT_RGBA16F
 	}, resource.load(env.path .. "/irradiance.bin"))
 
 	local slice_width  = ctx.params.prefilter.width
@@ -59,7 +59,7 @@ M.load_environment = function(ctx, env)
 			type        = resource.TEXTURE_TYPE_CUBE_MAP,
 			width       = slice_width,
 			height      = slice_height,
-			format      = resource.TEXTURE_FORMAT_RGBA32F,
+			format      = resource.TEXTURE_FORMAT_RGBA16F,
 			mipmap      = i,
 		}, resource.load(slice_path))
 		slice_width  = slice_height / 2
