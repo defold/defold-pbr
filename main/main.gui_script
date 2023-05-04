@@ -21,6 +21,45 @@ local function get_environment_by_name(name)
 	end
 end
 
+function position_widgets(self)
+	local height     = 24
+	local start_y    = -24
+	local start_x    = 24
+	local text_scale = 0.3
+
+	local i = 0
+
+	gui.set_position(self.debug_mode_label, vmath.vector3(12, start_y, 0))
+	gui.set_scale(self.debug_mode_label, vmath.vector3(text_scale * 2, text_scale * 2, 1))
+
+	i = i + 1
+
+	for k,v in ipairs(self.debug_mode_wids) do
+		gui.set_position(v.radio, vmath.vector3(start_x, start_y - height * i, 0))
+		gui.set_position(v.label, vmath.vector3(start_x + 24, start_y - height * i, 0))
+		gui.set_scale(v.radio, vmath.vector3(text_scale, text_scale, 1))
+		gui.set_scale(v.label, vmath.vector3(text_scale, text_scale, 1))
+		gui.set_text(v.label, v.name)
+
+		i = i + 1
+	end
+
+	i = i + 1
+
+	gui.set_position(self.environment_label, vmath.vector3(12, start_y - height * i, 0))
+	gui.set_scale(self.environment_label, vmath.vector3(text_scale * 2, text_scale * 2, 1))
+
+	i = i + 1
+	for k,v in pairs(self.env_selection_wid) do
+		gui.set_position(v.radio, vmath.vector3(start_x, start_y - height * i, 0))
+		gui.set_position(v.label, vmath.vector3(start_x + 24, start_y - height * i, 0))
+		gui.set_scale(v.radio, vmath.vector3(text_scale, text_scale, 1))
+		gui.set_scale(v.label, vmath.vector3(text_scale, text_scale, 1))
+		gui.set_text(v.label, k)
+		i = i + 1
+	end
+end
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	-- radio
@@ -70,48 +109,8 @@ function init(self)
 	end
 
 	self.is_locked = false
-end
 
-function update_debug_wids(self)
-	local height     = 24
-	local start_y    = -24
-	local start_x    = 24
-	local text_scale = 0.3
-
-	local i = 0
-
-	gui.set_position(self.debug_mode_label, vmath.vector3(12, start_y, 0))
-	gui.set_scale(self.debug_mode_label, vmath.vector3(text_scale * 2, text_scale * 2, 1))
-
-	i = i + 1
-
-	for k,v in ipairs(self.debug_mode_wids) do
-		gui.set_position(v.radio, vmath.vector3(start_x, start_y - height * i, 0))
-		gui.set_position(v.label, vmath.vector3(start_x + 24, start_y - height * i, 0))
-		gui.set_scale(v.radio, vmath.vector3(text_scale, text_scale, 1))
-		gui.set_scale(v.label, vmath.vector3(text_scale, text_scale, 1))
-		gui.set_text(v.label, v.name)
-
-		i = i + 1
-	end
-
-	i = i + 1
-
-	gui.set_position(self.environment_label, vmath.vector3(12, start_y - height * i, 0))
-	gui.set_scale(self.environment_label, vmath.vector3(text_scale * 2, text_scale * 2, 1))
-
-	i = i + 1
-	for k,v in pairs(self.env_selection_wid) do
-		gui.set_position(v.radio, vmath.vector3(start_x, start_y - height * i, 0))
-		gui.set_position(v.label, vmath.vector3(start_x + 24, start_y - height * i, 0))
-		gui.set_scale(v.radio, vmath.vector3(text_scale, text_scale, 1))
-		gui.set_scale(v.label, vmath.vector3(text_scale, text_scale, 1))
-		gui.set_text(v.label, k)
-		i = i + 1
-	end
-end
-function update(self, dt)
-	update_debug_wids(self)
+	position_widgets(self)
 end
 
 function on_input(self, action_id, action)
@@ -125,7 +124,7 @@ function on_input(self, action_id, action)
 	end
 	
 	--------------------------
-	-- Update debug selection
+	-- Handle debug selection
 	--------------------------
 	local debug_mode = PBR.get_debug_mode()
 	local debug_mode_ = debug_mode
@@ -138,7 +137,7 @@ function on_input(self, action_id, action)
 	end
 
 	--------------------------
-	-- Update env selection
+	-- Handle env selection
 	--------------------------
 	local env = PBR.get_environment()
 	local env_ = env
@@ -152,12 +151,12 @@ function on_input(self, action_id, action)
 	end
 
 	--------------------------
-	-- Update camera exposure
+	-- Handle camera exposure
 	--------------------------
 	PBR.set_exposure(dirtylarry:slider("camera_exposure", action_id, action, 0.01, 8, PBR.get_exposure()))
 
 	-----------------------
-	-- Update light sliders
+	-- Handle light sliders
 	-----------------------
 	local light_0 = PBR.get_light_params(0)
 	light_0.intensity = dirtylarry:slider("light_0", action_id, action, 0, 20, light_0.intensity)
