@@ -9,9 +9,9 @@
 	varying mediump mat3 var_TBN;
 
 	// Environment inputs
-	uniform lowp samplerCube tex_diffuse_irradiance;
-	uniform lowp samplerCube tex_prefiltered_reflection;
-	uniform lowp sampler2D   tex_brdflut;
+	uniform mediump samplerCube tex_diffuse_irradiance;
+	uniform mediump samplerCube tex_prefiltered_reflection;
+	uniform mediump sampler2D   tex_brdflut;
 
 	// Material inputs
 	uniform lowp sampler2D tex_albedo;
@@ -27,10 +27,10 @@
 	// col 2: xyz: color
 	// col 3: x: type
 
-	uniform lowp vec4 u_pbr_params_0;
-	uniform lowp vec4 u_pbr_params_1;
-	uniform lowp vec4 u_pbr_params_2;
-	uniform lowp vec4 u_pbr_scene_params;
+	uniform mediump vec4 u_pbr_params_0;
+	uniform mediump vec4 u_pbr_params_1;
+	uniform mediump vec4 u_pbr_params_2;
+	uniform mediump vec4 u_pbr_scene_params;
 
 	#define GET_LIGHT_COUNT()     int(u_pbr_scene_params.y)
 	#define GET_CAMERA_EXPOSURE() u_pbr_scene_params.z
