@@ -22,20 +22,20 @@ function init(self)
 	local key_light_dir  = vmath.rotate(key_light_qdir, vmath.vector3(0,0,-1))
 	local fill_light_dir = vmath.rotate(fill_light_qdir, vmath.vector3(0,0,-1))
 
-	-- Initialize a PBR ctx
-	self.pbr = PBR.initialize()
+	-- Initialize the PBR ctx
+	PBR.initialize()
 
 	-- Load a default environment
-	PBR.set_environment(self.pbr, C.ENVIRONMENTS[1])
+	PBR.set_environment(C.ENVIRONMENTS[1].name, C.ENVIRONMENTS[1])
 
 	-- Add lights
-	PBR.add_light_directional(self.pbr, {
+	PBR.add_light_directional({
 		direction = vmath.normalize(key_light_dir),
 		color     = vmath.vector3(0.5,0.5,1),
 		intensity = 1,
 	})
 
-	PBR.add_light_directional(self.pbr, {
+	PBR.add_light_directional({
 		direction = vmath.normalize(fill_light_dir),
 		color     = vmath.vector3(1,0.5,0),
 		intensity = 0.5
@@ -43,20 +43,12 @@ function init(self)
 end
 
 function update(self, dt)
-	PBR.update(self.pbr, {
-		camera_world = go.get_world_position("/camera"),
-		exposure = self.exposure
-	})
+	PBR.set_camera_world(go.get_world_position("/camera"))
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("proxy_loaded") then
 		msg.post(sender, "init")
 		msg.post(sender, "enable")
-	end
-	if message_id == hash("set_env") then
-		PBR.set_environment(self.pbr, C.ENVIRONMENTS[message[1]])
-	elseif message_id == hash("set_exposure") then
-		self.exposure = message[1]
 	end
 end

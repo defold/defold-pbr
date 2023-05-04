@@ -10,4 +10,3 @@ void main()
     gl_FragColor = vec4(fromLinear(color.rgb),1.0);
     gl_FragColor = vec4(exposure(color.rgb, GET_CAMERA_EXPOSURE()), 1.0);
 }
-

@@ -65,7 +65,6 @@ M.load_environment = function(ctx, env)
 		slice_width  = slice_height / 2
 		slice_height = slice_height / 2
 	end
-
 	ctx.handle_irradiance = resource.get_texture_info(ctx.texture_irradiance).handle
 	ctx.handle_prefilter  = resource.get_texture_info(ctx.texture_prefilter).handle
 end
