@@ -9,3 +9,7 @@ Thumbs.db
 .cproject
 builtins
 assets/scenes
+
+manifest*
+debug.keystore*
+assets/environment-maps
