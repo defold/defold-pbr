@@ -8,5 +8,5 @@ void main()
 {
     vec4 color   = textureLod(tex0, var_position.xyz, 5.0);
     gl_FragColor = vec4(fromLinear(color.rgb),1.0);
-    gl_FragColor = vec4(exposure(color.rgb, GET_CAMERA_EXPOSURE()), 1.0);
+    gl_FragColor = vec4(exposure(color.rgb, PBR_CAMERA_EXPOSURE), 1.0);
 }

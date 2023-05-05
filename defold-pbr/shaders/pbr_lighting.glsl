@@ -10,9 +10,9 @@
 
 	#include "/defold-pbr/shaders/pbr_input.glsl"
 
-	#define GET_LIGHT_POSITION(light_index)  u_light_data[light_index][0].xyz 
-	#define GET_LIGHT_DIRECTION(light_index) u_light_data[light_index][1].xyz 
-	#define GET_LIGHT_COLOR(light_index)     u_light_data[light_index][2].xyz 
+	#define GET_LIGHT_POSITION(light_index)  u_light_data[light_index][0].xyz
+	#define GET_LIGHT_DIRECTION(light_index) u_light_data[light_index][1].xyz
+	#define GET_LIGHT_COLOR(light_index)     u_light_data[light_index][2].xyz
 	#define GET_LIGHT_TYPE(light_index)      int(u_light_data[light_index][3][0])
 	#define GET_LIGHT_INTENSITY(light_index) u_light_data[light_index][3][1]
 

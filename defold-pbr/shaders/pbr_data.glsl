@@ -15,24 +15,24 @@
 		params.hasEmissiveTexture          = u_pbr_params_2[0] > 0.0f;
 		params.hasMetallicRoughnessTexture = u_pbr_params_2[1] > 0.0f;
 		params.hasOcclusionTexture         = u_pbr_params_2[2] > 0.0f;
-		params.lightCount                  = GET_LIGHT_COUNT();
+		params.lightCount                  = PBR_LIGHT_COUNT;
 		return params;
 	}
 
 	vec3 getNormal(PBRParams params)
 	{
 	#ifdef USE_DEBUG_DRAWING
-		if (GET_DEBUG_MODE() == DEBUG_MODE_NORMALS)
+		if (PBR_DEBUG_MODE == DEBUG_MODE_NORMALS)
 		{
 			return var_normal;
 		}
 
-		if (GET_DEBUG_MODE() == DEBUG_MODE_TANGENTS)
+		if (PBR_DEBUG_MODE == DEBUG_MODE_TANGENTS)
 		{
 			return var_tangent;
 		}
 
-		if (GET_DEBUG_MODE() == DEBUG_MODE_BITANGENTS)
+		if (PBR_DEBUG_MODE == DEBUG_MODE_BITANGENTS)
 		{
 			return cross(var_normal, var_tangent);
 		}
@@ -43,7 +43,7 @@
 			lowp vec3 sample_normal = texture2D(tex_normal, var_texcoord0).rgb;
 
 		#ifdef USE_DEBUG_DRAWING
-			if (GET_DEBUG_MODE() == DEBUG_MODE_NORMAL_TEXTURE)
+			if (PBR_DEBUG_MODE == DEBUG_MODE_NORMAL_TEXTURE)
 			{
 				return sample_normal;
 			}

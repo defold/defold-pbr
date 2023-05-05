@@ -17,7 +17,7 @@ void main()
 	lighting                  = applyOcclusion(params, lightInfo, lighting);
 	lighting                  = applyEmissive(params, lighting);
 	
-	gl_FragColor.rgb = exposure(lighting, GET_CAMERA_EXPOSURE());
+	gl_FragColor.rgb = exposure(lighting, PBR_CAMERA_EXPOSURE);
 	gl_FragColor.a   = materialInfo.baseColor.a;
 	gl_FragColor     = applyDebugMode(gl_FragColor, materialInfo, lightInfo, pbrData);
 }

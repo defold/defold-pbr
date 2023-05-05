@@ -32,8 +32,8 @@
 	uniform mediump vec4 u_pbr_params_2;
 	uniform mediump vec4 u_pbr_scene_params;
 
-	#define GET_LIGHT_COUNT()     int(u_pbr_scene_params.y)
-	#define GET_CAMERA_EXPOSURE() u_pbr_scene_params.z
+	#define PBR_LIGHT_COUNT     int(u_pbr_scene_params.y)
+	#define PBR_CAMERA_EXPOSURE u_pbr_scene_params.z
 
 	struct PBRParams
 	{
