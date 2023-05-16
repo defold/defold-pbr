@@ -1,0 +1,120 @@
+name: "Material_MR"
+tags: "model"
+vertex_program: "/defold-pbr/shaders/pbr.vp"
+fragment_program: "/defold-pbr/shaders/pbr.fp"
+vertex_space: VERTEX_SPACE_LOCAL
+vertex_constants {
+  name: "u_mtx_view"
+  type: CONSTANT_TYPE_VIEW
+}
+vertex_constants {
+  name: "u_mtx_world"
+  type: CONSTANT_TYPE_WORLD
+}
+vertex_constants {
+  name: "u_mtx_worldview"
+  type: CONSTANT_TYPE_WORLDVIEW
+}
+vertex_constants {
+  name: "u_mtx_projection"
+  type: CONSTANT_TYPE_PROJECTION
+}
+vertex_constants {
+  name: "u_mtx_normal"
+  type: CONSTANT_TYPE_NORMAL
+}
+fragment_constants {
+  name: "u_pbr_params_0"
+  type: CONSTANT_TYPE_USER
+  value {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+}
+fragment_constants {
+  name: "u_pbr_params_1"
+  type: CONSTANT_TYPE_USER
+  value {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 1.0
+  }
+}
+fragment_constants {
+  name: "u_pbr_params_2"
+  type: CONSTANT_TYPE_USER
+  value {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+    w: 0.0
+  }
+}
+samplers {
+  name: "tex_diffuse_irradiance"
+  wrap_u: WRAP_MODE_REPEAT
+  wrap_v: WRAP_MODE_REPEAT
+  filter_min: FILTER_MODE_MIN_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+  max_anisotropy: 1.0
+}
+samplers {
+  name: "tex_prefiltered_reflection"
+  wrap_u: WRAP_MODE_REPEAT
+  wrap_v: WRAP_MODE_REPEAT
+  filter_min: FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+  max_anisotropy: 1.0
+}
+samplers {
+  name: "tex_brdflut"
+  wrap_u: WRAP_MODE_REPEAT
+  wrap_v: WRAP_MODE_REPEAT
+  filter_min: FILTER_MODE_MIN_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+  max_anisotropy: 1.0
+}
+samplers {
+  name: "tex_albedo"
+  wrap_u: WRAP_MODE_REPEAT
+  wrap_v: WRAP_MODE_REPEAT
+  filter_min: FILTER_MODE_MIN_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+  max_anisotropy: 1.0
+}
+samplers {
+  name: "tex_metallic_roughness"
+  wrap_u: WRAP_MODE_REPEAT
+  wrap_v: WRAP_MODE_REPEAT
+  filter_min: FILTER_MODE_MIN_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+  max_anisotropy: 1.0
+}
+samplers {
+  name: "tex_normal"
+  wrap_u: WRAP_MODE_REPEAT
+  wrap_v: WRAP_MODE_REPEAT
+  filter_min: FILTER_MODE_MIN_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+  max_anisotropy: 1.0
+}
+samplers {
+  name: "tex_occlusion"
+  wrap_u: WRAP_MODE_REPEAT
+  wrap_v: WRAP_MODE_REPEAT
+  filter_min: FILTER_MODE_MIN_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+  max_anisotropy: 1.0
+}
+samplers {
+  name: "tex_emissive"
+  wrap_u: WRAP_MODE_REPEAT
+  wrap_v: WRAP_MODE_REPEAT
+  filter_min: FILTER_MODE_MIN_LINEAR
+  filter_mag: FILTER_MODE_MAG_LINEAR
+  max_anisotropy: 1.0
+}
+max_page_count: 0
