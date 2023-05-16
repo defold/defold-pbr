@@ -38,6 +38,53 @@ local function get_platform_exe()
     return platform_to_binary[editor.platform]
 end
 
+local function win32_adjust_path(path)
+    return path:gsub("/","\\")
+end
+
+local function get_platform_mkdir_cmd(directory)
+    if editor.platform == "x86_64-win32" then
+        local adjusted_path = win32_adjust_path(directory)
+        return {
+            action = "shell",
+            command = {"cmd.exe", "/c", "if not exist", adjusted_path, "mkdir", adjusted_path}
+        }
+    else
+        return {
+            action = "shell",
+            command = { "mkdir", "-p", directory }
+        }
+    end
+end
+
+local function get_platform_tool_cmd(input_path, directory)
+    local tools_path = "defold-pbr/tools/" .. get_platform_exe()
+    if editor.platform == "x86_64-win32" then
+        return {
+            action = "shell",
+            command = {
+                "cmd.exe", "/c",
+                win32_adjust_path(tools_path),
+                win32_adjust_path(input_path),
+                win32_adjust_path(directory),
+                "--generate", "irradiance",
+                "--generate", "prefilter",
+                "--meta-data", "--verbose"
+            }
+        }
+    else
+        return {
+            action = "shell",
+            command = {
+                tools_path, input_path, directory,
+                "--generate", "irradiance",
+                "--generate", "prefilter",
+                "--meta-data", "--verbose"
+            }
+        }
+    end
+end
+
 local CMD_CREATE_ASSETS = {
     label     = "Defold PBR - Create Environment Assets",
     locations = {"Assets"},
@@ -55,19 +102,8 @@ local CMD_CREATE_ASSETS = {
         local directory = get_base_directory(input_path) .. strip_ext(get_base_file_name(input_path))
         
         return {
-            {
-                action = "shell",
-                command = { "mkdir", "-p", directory }
-            },
-            {
-                action = "shell",
-                command = {
-                    "defold-pbr/tools/" .. get_platform_exe(), input_path, directory,
-                    "--generate", "irradiance",
-                    "--generate", "prefilter",
-                    "--meta-data", "--verbose"
-                }
-            }
+            get_platform_mkdir_cmd(directory),
+            get_platform_tool_cmd(input_path, directory)
         }
     end
 }
