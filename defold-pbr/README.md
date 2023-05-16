@@ -1,0 +1,97 @@
+# Defold PBR Core Manual
+
+This extension is at an alpha/work-in-progress state! If something doesn't work, please contact us at:
+
+* [Forum](https://forum.defold.com/)
+* [Discord Server](https://discord.gg/6eSFn3U5)
+
+Or open a ticket at the [Github Repository](https://github.com/Jhonnyg/defold-pbr)
+
+
+### Integrating in .script / gameobject world
+To integrate this extension in a project, you must first initialize the PBR core in a .script or lua module somewhere in the project:
+
+```lua
+local PBR = require 'defold-pbr/core'
+
+function init(self)
+	-- Initialize the PBR ctx
+	PBR.initialize()
+end
+```
+
+After this step, you can start adding lights and environments:
+
+```lua
+function setup_pbr(self)
+	-- pbr is initialized at this point
+	PBR.set_environment("blue_skies", { path = "/path/to/environment/meta" })
+	PBR.add_environment_light({
+		direction = vmath.vector3(-1, -1, -1),
+		color     = vmath.vector3(0.5, 0.5, 1),
+		intensity = 1
+	})
+	PBR.add_point_light({
+		position  = vmath.vector3(0, 1, 0),
+		color     = vmath.vector3(1, 0, 0),
+		intensity = 0.5
+	})
+end
+```
+
+The light calculations in the shader requires that the camera position is updated whenever the camera has moved.
+```lua
+function update(self)
+	PBR.set_camera_world(go.get_world_position("/camera"))
+end
+```
+
+Note: This is not done automatically since this extension doesn't deal with any explicit camera or light components, it is up to each project to define what how "light" or "camera" is represented. This done intentionally so that the extension doesn't impose a specific way of working in custom projects.
+
+
+### Integrating in .render_script
+
+The materials and shaders requires the set of support textures and constants to render properly. To setup the drawing of PBR models, first create a custom render script and render prototype (or copy from the builtins folder) if you don't have one already. In the render scripts, you first need to require the PBR core module somewhere (usually the first top lines of the script):
+
+```lua
+local PBR = require 'defold-pbr/core'
+```
+
+And then in the update function, you need to grab the support textures from the PBR module and enable them onto the render state:
+```lua
+function update(self)
+	-- do the usual draw setup before drawing, such as clearing buffers etc. The default builtin script takes care of the basic setup here
+
+	-- grab the pbr assets from the PBR core (note, you must have initialized the module first!)
+  local pbr_constants = PBR.get_constants()
+  local pbr_textures  = PBR.get_textures()
+
+  -- render the models
+  render.enable_texture(0, pbr_textures.irradiance)
+  render.enable_texture(1, pbr_textures.prefilter)
+  render.enable_texture(2, pbr_textures.brdf_lut)
+
+  -- this is the basic draw state setup of rendering models
+  render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
+  render.enable_state(render.STATE_CULL_FACE)
+  render.enable_state(render.STATE_DEPTH_TEST)
+  render.set_depth_mask(true)
+  render.draw(self.model_pred, { constants = pbr_constants }) -- optionally, pass in a frustum here!
+
+  render.disable_texture(0)
+  render.disable_texture(1)
+  render.disable_texture(2)
+end
+```
+
+Note: The default base material uses the "model" predicate, so make sure to create such a predicate first somewhere in your render scripts init function!
+
+
+### Generating environment lights from .hdr files
+
+The extension contains a built-in editor script that can be used to generate the engine ready binaries for the prefiltered environment lights.
+To use the extension, right-click on a .hdr file somewhere in the project and the tools should do the rest!
+
+Note: The first time you run the executables, your OS might not accept running them and the script won't be able to run them. Before you can run them, you must run them outside of Defold ONCE. This step is dependant on what OS you use, but there is usually a popup with instructions how to accept executables from "untrusted sources". Furthermore, this step is only necessary the first time you run the tools (or when the tools have been updated). It is an annoying process, but currently it's the only way.
+
+Note: DON'T OPEN EXECUTABLES OR HDR FILES FROM DEFOLD. The editor will open them as a text file, which will lock your editor for a very long time. Instead, right click the folder and select "Show in desktop" - this will open the folder in your OS and you can open them from there.
