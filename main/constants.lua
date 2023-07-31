@@ -2,8 +2,7 @@ local M = {}
 
 M.ENVIRONMENTS = {
 	require "assets/environment-maps/blue_photo_studio_2k/meta",
-	require "assets/environment-maps/solitude_interior_2k/meta",
-	require "assets/environment-maps/modern_buildings_2_2k/meta"
+	require "assets/environment-maps/christmas_photo_studio_07_2k/meta"
 }
 
 return M
