@@ -92,6 +92,22 @@ local function get_platform_tool_cmd(input_path, directory)
     end
 end
 
+local function get_platform_content_prereq_cmd()
+    if editor.platform == "x86_64-macos" then
+        return {
+            action = "shell",
+            command = { "chmod", "+x", "defold-pbr/tools/osx-python.sh" }
+        }
+    end
+end
+
+local function get_platform_content_tool_cmd(input_path, input_base)
+    return {
+        action = "shell",
+        command = { get_platform_python(), "defold-pbr/tools/blender-content-pipeline/blender_to_defold.py", "--gltf-to-defold", input_path, "--relative-path", input_base }
+    }
+end
+
 local CMD_CREATE_ENV_ASSETS = {
     label     = "Defold PBR - Create Environment Assets",
     locations = {"Assets"},
@@ -131,10 +147,8 @@ local CMD_CONVERT_GLTF_CONTENT = {
         local input_path = trim_leading_slash(editor.get(opts.selection, "path"))
         local input_base = get_base_directory(input_path)
         return {
-            {
-                action = "shell",
-                command = { get_platform_python(), "defold-pbr/tools/blender-content-pipeline/blender_to_defold.py", "--gltf-to-defold", input_path, "--relative-path", input_base }
-            }
+            get_platform_content_prereq_cmd(),
+            get_platform_content_tool_cmd(input_path, input_base)
         }
     end
 }
