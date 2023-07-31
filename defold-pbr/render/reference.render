@@ -1,1 +1,1 @@
-script: "/main/main.render_script"
+script: "/defold-pbr/render/reference.render_script"

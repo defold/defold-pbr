@@ -78,7 +78,9 @@ class projectcontext(object):
         for x in [self.MATERIAL_PATH, self.MESH_PATH, self.TEXTURE_PATH, self.MODEL_PATH, self.GAMEOBJECT_PATH, self.COLLECTION_PATH]:
             os.makedirs(x, exist_ok=True)
 
-        blender_utils.run_blender_script("convert_gltf_separate_files.py", [self.path_gltf, self.MESH_PATH])
+
+        convert_gltf_separate_files_path = os.path.join(os.path.dirname(__file__), "convert_gltf_separate_files.py")
+        blender_utils.run_blender_script(convert_gltf_separate_files_path, [self.path_gltf, self.MESH_PATH])
 
         defold_collection = defold_content_helpers.collection("content")
 

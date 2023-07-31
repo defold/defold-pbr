@@ -1,6 +1,6 @@
 [bootstrap]
 main_collection = /main/main.collectionc
-render = /main/main.renderc
+render = /defold-pbr/render/reference.renderc
 
 [script]
 shared_state = 1
