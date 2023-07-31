@@ -2,6 +2,9 @@ import os
 import shutil
 import defold_content_helpers
 import blender_utils
+import pygltflib
+
+from pygltflib.utils import ImageFormat
 
 # Generated output paths
 MATERIAL_PATH     = "%s/materials"
@@ -10,13 +13,6 @@ TEXTURE_PATH      = "%s/textures"
 MODEL_PATH        = "%s/models"
 GAMEOBJECT_PATH   = "%s/gameobjects"
 COLLECTION_PATH   = "%s/collections"
-
-def check_prereqs():
-    try:
-        import pygltflib
-    except:
-        print("Could not import PyGLTFLib, did you install all prerequisites?")
-        sys.exit(-1)
 
 class projectcontext(object):
     def __init__(self, gltf_path, output_path):
@@ -77,9 +73,6 @@ class projectcontext(object):
 
     def build(self):
         print("Building %s to %s" % (self.path_gltf, self.path_output))
-
-        import pygltflib
-        from pygltflib.utils import ImageFormat
         gltf_file = pygltflib.GLTF2().load(self.path_gltf)
 
         for x in [self.MATERIAL_PATH, self.MESH_PATH, self.TEXTURE_PATH, self.MODEL_PATH, self.GAMEOBJECT_PATH, self.COLLECTION_PATH]:
@@ -243,7 +236,6 @@ class projectcontext(object):
         self.write_collection_proxy(defold_collection_proxy)
 
 def do_build_project(args, output_path=None):
-    check_prereqs()
     for x in args:
         if output_path == None:
             output_path = os.path.splitext(os.path.abspath(x))[0] + "_Build"
