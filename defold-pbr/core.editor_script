@@ -30,17 +30,21 @@ local function strip_ext(str)
     return string.sub(str, 1, last_ext-1)
 end
 
+local function get_platform_plugin_file(the_file)
+    return "build/plugins/defold-pbr/plugins/" .. the_file
+end
+
 local function get_platform_exe()
     local platform_to_binary = {}
     platform_to_binary["x86_64-macos"] = "pbr-utils-macos"
     platform_to_binary["x86_64-win32"] = "pbr-utils-windows.exe"
     platform_to_binary["x86_64-linux"] = "pbr-utils-linux"
-    return "build/plugins/defold-pbr/plugins/" .. platform_to_binary[editor.platform]
+    return get_platform_plugin_file(platform_to_binary[editor.platform])
 end
 
 local function get_platform_python()
     if editor.platform == "x86_64-macos" then
-        return "defold-pbr/tools/osx-python.sh"
+        return get_platform_plugin_file("osx-python.sh")
     end
     return "python"
 end
@@ -105,7 +109,7 @@ local function get_platform_content_prereq_cmd()
     if editor.platform == "x86_64-macos" then
         return {
             action = "shell",
-            command = { "chmod", "+x", "build/plugins/defold-pbr/plugins/osx-python.sh" }
+            command = { "chmod", "+x", get_platform_plugin_file("osx-python.sh") }
         }
     end
 end
@@ -113,7 +117,7 @@ end
 local function get_platform_content_tool_cmd(input_path, input_base)
     return {
         action = "shell",
-        command = { get_platform_python(), "defold-pbr/tools/blender-content-pipeline/blender_to_defold.py", "--gltf-to-defold", input_path, "--relative-path", input_base }
+        command = { get_platform_python(), get_platform_plugin_file("blender-content-pipeline-master/blender_to_defold.py"), "--gltf-to-defold", input_path, "--relative-path", input_base }
     }
 end
 
@@ -132,7 +136,7 @@ local CMD_CREATE_ENV_ASSETS = {
     run = function(opts)
         local input_path = trim_leading_slash(editor.get(opts.selection, "path"))
         local directory = get_base_directory(input_path) .. strip_ext(get_base_file_name(input_path))
-        
+
         return {
             get_platform_tool_prereq_cmd(),
             get_platform_mkdir_cmd(directory),
@@ -163,7 +167,7 @@ local CMD_CONVERT_GLTF_CONTENT = {
     end
 }
 
-function M.get_commands() 
+function M.get_commands()
     return {
         CMD_CREATE_ENV_ASSETS,
         CMD_CONVERT_GLTF_CONTENT

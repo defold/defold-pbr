@@ -27,7 +27,4 @@ rm ${OUTPUT_PATH}/pbr-utils-windows.exe
 rm ${OUTPUT_PATH}/pbr-utils-linux
 
 curl ${BLENDER_TOOLS_BASE_PATH} --output-dir ${OUTPUT_PATH} -o blender-content-pipeline.zip -LJO
-unzip ${OUTPUT_PATH}/blender-content-pipeline.zip
-rm ${OUTPUT_PATH}/blender-content-pipeline.zip
-rm -rf ${TOOLS_PATH}/blender-content-pipeline
-mv blender-content-pipeline-master ${TOOLS_PATH}/blender-content-pipeline
+mv ${OUTPUT_PATH}/blender-content-pipeline.zip ${PLUGINS_PATH}/common.zip
