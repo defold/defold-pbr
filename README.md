@@ -12,3 +12,7 @@ Problems or questions? Please contact us at our [Forum](https://forum.defold.com
 * Shaders based from the [GLTF sample viewer](https://github.com/KhronosGroup/glTF-Sample-Viewer)
 * Example GLTF content downloaded from [GLTF sample models](https://github.com/KhronosGroup/glTF-Sample-Models)
 * Environment maps downloaded from [Polyhaven](https://polyhaven.com)
+
+## Known issues
+
+* There are several known issues on linux platform(s) currently, so we can't guarantee any support on linux currently.
