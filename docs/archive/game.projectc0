@@ -1,17 +1,18 @@
 [project]
-title = defold-deferred-rendering
+title = defold-pbr
 version = 1.0
 write_log = 0
 compress_archive = 1
 publisher = unnamed
 developer = unnamed
-title_as_file_name = defolddeferredrendering
+custom_resources = defold-pbr/assets, assets/environment-maps
+title_as_file_name = defoldpbr
 
 [display]
 width = 960
 height = 640
-high_dpi = 0
-samples = 0
+high_dpi = 1
+samples = 8
 fullscreen = 0
 update_frequency = 0
 swap_interval = 1
@@ -21,9 +22,9 @@ dynamic_orientation = 0
 display_device_info = 0
 
 [render]
-clear_color_red = 0
-clear_color_green = 0
-clear_color_blue = 0
+clear_color_red = 0.25
+clear_color_green = 0.25
+clear_color_blue = 0.25
 clear_color_alpha = 0
 
 [physics]
@@ -50,12 +51,12 @@ max_fixed_timesteps = 2
 
 [bootstrap]
 main_collection = /main/main.collectionc
-render = /main/main.renderc
+render = /main/render/main.renderc
 
 [graphics]
 default_texture_min_filter = linear
 default_texture_mag_filter = linear
-max_draw_calls = 2048
+max_draw_calls = 1024
 max_characters = 8192
 max_debug_vertices = 10000
 texture_profiles = /builtins/graphics/default.texture_profiles
@@ -63,7 +64,7 @@ verify_graphics_calls = 1
 memory_size = 512
 
 [shader]
-output_spirv = 0
+output_spirv = 1
 
 [sound]
 gain = 1
@@ -82,7 +83,7 @@ max_resources = 1024
 repeat_delay = 0.5
 repeat_interval = 0.2
 gamepads = /builtins/input/default.gamepadsc
-game_binding = /input/game.input_bindingc
+game_binding = /input/scene_input.input_bindingc
 use_accelerometer = 1
 
 [sprite]
@@ -90,7 +91,7 @@ max_count = 128
 subpixels = 1
 
 [model]
-max_count = 2048
+max_count = 128
 split_meshes = 0
 
 [mesh]
@@ -102,7 +103,7 @@ max_particlefx_count = 64
 max_particle_count = 1024
 
 [collection]
-max_instances = 2048
+max_instances = 1024
 max_input_stack_entries = 16
 
 [collection_proxy]
@@ -112,7 +113,7 @@ max_count = 8
 max_count = 128
 
 [factory]
-max_count = 1024
+max_count = 128
 
 [ios]
 launch_screen = /builtins/manifests/ios/LaunchScreen.storyboardc
@@ -178,7 +179,7 @@ http_thread_count = 4
 http_cache_enabled = 1
 
 [library]
-include_dirs = 
+include_dirs = defold-pbr
 
 [script]
 shared_state = 1
