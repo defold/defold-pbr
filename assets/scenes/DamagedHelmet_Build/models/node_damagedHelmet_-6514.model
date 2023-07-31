@@ -8,6 +8,7 @@ textures: "/assets/scenes/DamagedHelmet_Build/textures/Texture_1.png"
 textures: "/assets/scenes/DamagedHelmet_Build/textures/Texture_4.png"
 textures: "/assets/scenes/DamagedHelmet_Build/textures/Texture_3.png"
 textures: "/assets/scenes/DamagedHelmet_Build/textures/Texture_2.png"
+
 skeleton: ""
 animations: ""
 default_animation: ""

@@ -13,6 +13,7 @@ if __name__ == '__main__':
 	parser.add_argument('--blend-to-gltf',  nargs='+')
 	parser.add_argument('--gltf-to-defold', nargs=1)
 	parser.add_argument('--preview-gltf',   nargs=1)
+	parser.add_argument('--relative-path',  nargs=1)
 	parser.add_argument('--clean',          action='store_true')
 
 	args = parser.parse_args()
@@ -29,7 +30,8 @@ if __name__ == '__main__':
 	if args.gltf_to_defold:
 		print("Building Defold project from gltf")
 		import convert_gltf_to_defold
-		convert_gltf_to_defold.do_build_project(args.gltf_to_defold)
+		relative_path = args.relative_path and args.relative_path[0] or None
+		convert_gltf_to_defold.do_build_project(args.gltf_to_defold, relative_path)
 	if args.clean:
 		print("Cleaning build folder")
 		import preview_gltf

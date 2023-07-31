@@ -15,14 +15,15 @@ GAMEOBJECT_PATH   = "%s/gameobjects"
 COLLECTION_PATH   = "%s/collections"
 
 class projectcontext(object):
-    def __init__(self, gltf_path, output_path):
+    def __init__(self, gltf_path, output_path, project_relative_path):
         super(projectcontext, self).__init__()
-        self.path_gltf   = gltf_path
-        self.path_output = output_path
+        self.path_gltf     = gltf_path
+        self.path_output   = output_path
+        self.path_relative = project_relative_path or ""
         self.buildpaths()
 
     def buildpaths(self):
-        self.PROJECT_BASE_PATH = os.path.basename(self.path_output)
+        self.PROJECT_BASE_PATH = self.path_relative + os.path.basename(self.path_output)
 
         self.MATERIAL_PATH   = "%s/materials" % self.path_output
         self.MESH_PATH       = "%s/meshes" % self.path_output
@@ -105,8 +106,6 @@ class projectcontext(object):
             image_path_i     = "%s/%s" %  (self.TEXTURE_PATH, gltf_file.images[i].uri) # (gltf_base_path, gltf_file.images[i].uri) #(self.TEXTURE_PATH, i, ext)
             image_path_named = "%s/%s.png" % (self.TEXTURE_PATH, gltf_file.images[i].name)
 
-            print(gltf_file.images[i])
-
             if gltf_file.images[i].uri == None:
                 image_path_i = "%s/%s.%s" % (self.TEXTURE_PATH, i, ext)
                 shutil.move(image_path_i, image_path_named)
@@ -132,27 +131,6 @@ class projectcontext(object):
             defold_material.add_sampler("tex_normal",             defold_content_helpers.FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR, defold_content_helpers.FILTER_MODE_MAG_LINEAR, 16.0)
             defold_material.add_sampler("tex_occlusion",          defold_content_helpers.FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR, defold_content_helpers.FILTER_MODE_MAG_LINEAR, 16.0)
             defold_material.add_sampler("tex_emissive",           defold_content_helpers.FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR, defold_content_helpers.FILTER_MODE_MAG_LINEAR, 16.0)
-
-            """
-            pbr_params = [
-                baseColorFactor,
-                [
-                    metallicFactor,
-                    roughnessFactor,
-                    baseColorTexture != None and 1 or 0,
-                    normalTexture != None and 1 or 0
-                ],
-                [
-                    emissiveTexture != None and 1 or 0,
-                    metallicRoughnessTexture != None and 1 or 0,
-                    occlusionTexture != None and 1 or 0,
-                    0
-                ],
-                [0,0,0,0]
-            ]
-            """
-
-            #print(gltf_file.materials[i])
 
             texture_base_color         = self.get_texture(gltf_file.materials[i].pbrMetallicRoughness.baseColorTexture)
             texture_metallic_roughness = self.get_texture(gltf_file.materials[i].pbrMetallicRoughness.metallicRoughnessTexture)
@@ -237,10 +215,8 @@ class projectcontext(object):
 
         self.write_collection_proxy(defold_collection_proxy)
 
-def do_build_project(args, output_path=None):
+def do_build_project(args, relative_path=None):
     for x in args:
-        if output_path == None:
-            output_path = os.path.splitext(os.path.abspath(x))[0] + "_Build"
-
-        ctx = projectcontext(x, output_path)
+        output_path = os.path.splitext(os.path.abspath(x))[0] + "_Build"
+        ctx = projectcontext(x, output_path, relative_path)
         ctx.build()
