@@ -53,7 +53,20 @@ end
 
 * Note: This is not done automatically since this extension doesn't deal with any explicit camera or light components, it is up to each project to define what how "light" or "camera" is represented. This done intentionally so that the extension doesn't impose a specific way of working in custom projects.
 
-6) (OPTIONAL) Assign the reference renderer to the game project under bootstrap -> render
+6) Assign the reference renderer to the game project under bootstrap -> render
+
+(OPTIONAL) If you don't already have a camera setup that renders 3D, you need to do these steps:
+
+7) Create a camera in your collection
+8) In one of your script, add these lines:
+
+```lua
+function init(self)
+	msg.post("my-camera-id", "acquire_camera_focus") -- note: You need to input your camera components correct id here
+	msg.post("@render:", "use_camera_projection")
+	-- Other initialization code
+end
+```
 
 
 ### Integrating in .render_script
