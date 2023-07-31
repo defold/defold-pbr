@@ -140,7 +140,10 @@ local CMD_CONVERT_GLTF_CONTENT = {
 }
 
 function M.get_commands() 
-    return { CMD_CREATE_ENV_ASSETS, CMD_CONVERT_GLTF_CONTENT }
+    return {
+        CMD_CREATE_ENV_ASSETS,
+        CMD_CONVERT_GLTF_CONTENT
+    }
 end
 
 return M
