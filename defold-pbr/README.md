@@ -9,7 +9,10 @@ Or open a ticket at the [Github Repository](https://github.com/Jhonnyg/defold-pb
 
 
 ### Integrating in .script / gameobject world
-To integrate this extension in a project, you must first initialize the PBR core in a .script or lua module somewhere in the project:
+
+1) First, add "defold-pbr/assets" to project -> custom resources in your game.project file. This is needed for the PBR-core to find support assets needed during rendering.
+
+2) To initialize the PBR core, add the following in a .script or lua module somewhere in the project:
 
 ```lua
 local PBR = require 'defold-pbr/core'
@@ -20,12 +23,12 @@ function init(self)
 end
 ```
 
-After this step, you can start adding lights and environments:
+3) After this step, you can start adding lights and environments:
 
 ```lua
 function setup_pbr(self)
 	-- pbr is initialized at this point
-	PBR.set_environment("blue_skies", { path = "/path/to/environment/meta" })
+	PBR.set_environment("blue_skies", require("path/to/environment-map/meta"))
 	PBR.add_environment_light({
 		direction = vmath.vector3(-1, -1, -1),
 		color     = vmath.vector3(0.5, 0.5, 1),
@@ -39,19 +42,23 @@ function setup_pbr(self)
 end
 ```
 
-The light calculations in the shader requires that the camera position is updated whenever the camera has moved.
+4) For the environments to load, you need to add the path to where to find them under project -> custom resources!
+
+5) The light calculations in the shader requires that the camera position is updated whenever the camera has moved.
 ```lua
 function update(self)
 	PBR.set_camera_world(go.get_world_position("/camera"))
 end
 ```
 
-Note: This is not done automatically since this extension doesn't deal with any explicit camera or light components, it is up to each project to define what how "light" or "camera" is represented. This done intentionally so that the extension doesn't impose a specific way of working in custom projects.
+* Note: This is not done automatically since this extension doesn't deal with any explicit camera or light components, it is up to each project to define what how "light" or "camera" is represented. This done intentionally so that the extension doesn't impose a specific way of working in custom projects.
+
+6) (OPTIONAL) Assign the reference renderer to the game project under bootstrap -> render
 
 
 ### Integrating in .render_script
 
-* NOTE: There is a reference render script available in the defold-pbr/render that you can use a start for integration
+* Note: There is a reference render script available in the defold-pbr/render that you can use a start for integration.
 
 The materials and shaders requires the set of support textures and constants to render properly. To setup the drawing of PBR models, first create a custom render script and render prototype (or copy from the builtins folder) if you don't have one already. In the render scripts, you first need to require the PBR core module somewhere (usually the first top lines of the script):
 
