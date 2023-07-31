@@ -8,13 +8,13 @@
 	{
 		PBRParams params;
 		params.baseColor                   = u_pbr_params_0;
-		params.metallic                    = u_pbr_params_1[0];
-		params.roughness                   = u_pbr_params_1[1];
-		params.hasAlbedoTexture            = u_pbr_params_1[2] > 0.0f;
-		params.hasNormalTexture            = u_pbr_params_1[3] > 0.0f;
-		params.hasEmissiveTexture          = u_pbr_params_2[0] > 0.0f;
-		params.hasMetallicRoughnessTexture = u_pbr_params_2[1] > 0.0f;
-		params.hasOcclusionTexture         = u_pbr_params_2[2] > 0.0f;
+		params.metallic                    = u_pbr_params_1.x;
+		params.roughness                   = u_pbr_params_1.y;
+		params.hasAlbedoTexture            = u_pbr_params_1.z > 0.0f;
+		params.hasNormalTexture            = u_pbr_params_1.w > 0.0f;
+		params.hasEmissiveTexture          = u_pbr_params_2.x > 0.0f;
+		params.hasMetallicRoughnessTexture = u_pbr_params_2.y > 0.0f;
+		params.hasOcclusionTexture         = u_pbr_params_2.z > 0.0f;
 		params.lightCount                  = PBR_LIGHT_COUNT;
 		return params;
 	}

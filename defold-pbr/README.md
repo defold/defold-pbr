@@ -51,6 +51,8 @@ Note: This is not done automatically since this extension doesn't deal with any 
 
 ### Integrating in .render_script
 
+* NOTE: There is a reference render script available in the defold-pbr/render that you can use a start for integration
+
 The materials and shaders requires the set of support textures and constants to render properly. To setup the drawing of PBR models, first create a custom render script and render prototype (or copy from the builtins folder) if you don't have one already. In the render scripts, you first need to require the PBR core module somewhere (usually the first top lines of the script):
 
 ```lua
@@ -95,3 +97,35 @@ To use the extension, right-click on a .hdr file somewhere in the project and th
 Note: The first time you run the executables, your OS might not accept running them and the script won't be able to run them. Before you can run them, you must run them outside of Defold ONCE. This step is dependant on what OS you use, but there is usually a popup with instructions how to accept executables from "untrusted sources". Furthermore, this step is only necessary the first time you run the tools (or when the tools have been updated). It is an annoying process, but currently it's the only way.
 
 Note: DON'T OPEN EXECUTABLES OR HDR FILES FROM DEFOLD. The editor will open them as a text file, which will lock your editor for a very long time. Instead, right click the folder and select "Show in desktop" - this will open the folder in your OS and you can open them from there.
+
+### Exporting content from .glb files into Defold collections
+
+The extension also contains an editor script that converts a GLTF file into a Defold collection that can be used as a complete scene, or parts that can be copied into other collections to combine various scenes. To use this functionality, rick-click on a .glb file and select the "Extract GLTF Content" option in the drop-down. Note that this option will only be available for .glb files specifically.
+
+### Material specification
+
+If you use the default setup, the PBR shaders require material data to be exported and represented in a specific way. The GLTF conversion scripts do this data generation automatically, but if you want to do something more custom like changing parameters in runtime, this is how the material data is represented currently:
+
+For each material that is exported, three constants are used:
+
+```glsl
+u_pbr_params_0.xyzw : Base color
+u_pbr_params_1.x    : Metallic value
+u_pbr_params_1.y    : Roughness value
+u_pbr_params_1.z    : Material uses albedo texture if > 0, otherwise uses base color
+u_pbr_params_1.w    : Material uses normal texture if > 0, otherwise uses geometry normal
+u_pbr_params_2.x    : Material uses emissive texture if > 0
+u_pbr_params_2.y    : Material uses metallic / roughness texture if > 0, otherwise uses metallic or roughness values
+u_pbr_params_2.z    : Material uses occlussion texture if > 0
+u_pbr_params_2.w    : Unused (0)
+```
+
+Global data, set by a constant buffer in the core.lua module:
+
+```glsl
+u_pbr_scene_params.x : Debug rendering mode
+u_pbr_scene_params.y : Light count
+u_pbr_scene_params.z : Camera exposure
+u_pbr_scene_params.w : Unused (0)
+```
+
