@@ -1,5 +1,7 @@
 # Defold PBR Core
 
+Live demo: http://defold.com/defold-pbr/
+
 This is the base PBR core extension for Defold and contains a set of scripts, shaders and materials that should get you going with PBR rendering!
 
 Please consult the README.md in the defold-pbr folder for a guide how to integrate this extension into your project.
