@@ -103,13 +103,11 @@
 
 	vec3 getDiffuseLight(vec3 n)
 	{
-		//return texture(u_LambertianEnvSampler, u_EnvRotation * n).rgb * u_EnvIntensity;
 		return textureCube(tex_diffuse_irradiance, n).rgb;
 	}
 
 	vec4 getSpecularSample(vec3 reflection, float lod)
 	{
-		//return textureLod(u_GGXEnvSampler, u_EnvRotation * reflection, lod) * u_EnvIntensity;
 		return textureLod(tex_prefiltered_reflection, reflection, lod);
 	}
 

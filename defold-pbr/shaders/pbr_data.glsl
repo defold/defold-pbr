@@ -34,26 +34,29 @@
 
 		if (PBR_DEBUG_MODE == DEBUG_MODE_BITANGENTS)
 		{
-			return cross(var_normal, var_tangent);
+			return -cross(var_normal, var_tangent);
+		}
+
+		if (PBR_DEBUG_MODE == DEBUG_MODE_NORMAL_TEXTURE)
+		{
+			return params.hasNormalTexture ? texture2D(tex_normal, var_texcoord0).rgb : vec3(0.0);
 		}
 	#endif
 
+		
 		if (params.hasNormalTexture)
 		{
 			lowp vec3 sample_normal = texture2D(tex_normal, var_texcoord0).rgb;
-
-		#ifdef USE_DEBUG_DRAWING
-			if (PBR_DEBUG_MODE == DEBUG_MODE_NORMAL_TEXTURE)
-			{
-				return sample_normal;
-			}
-		#endif
-
 			sample_normal = sample_normal * 2.0 - 1.0;
+
+			/*
 			vec3 N = normalize(var_normal);
 			vec3 T = normalize(var_tangent); // normalize(q1 * st2.t - q2 * st1.t);
 			vec3 B = -normalize(cross(N, T));
-			mat3 TBN = mat3(T, B, N);
+			mat3 TBN = var_TBN; // mat3(T, B, N);
+			*/
+			
+			mat3 TBN = var_TBN;
 			return normalize(TBN * sample_normal);
 		}
 

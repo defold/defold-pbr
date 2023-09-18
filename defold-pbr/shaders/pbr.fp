@@ -2,7 +2,7 @@
 #define USE_ROUGHNESS_MAP // Not used
 
 #define LIGHT_IBL
-#define LIGHT_PUNCTUAL
+// #define LIGHT_PUNCTUAL
 
 #include "/defold-pbr/shaders/pbr_core.glsl"
 
