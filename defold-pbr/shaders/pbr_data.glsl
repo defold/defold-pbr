@@ -60,6 +60,12 @@
 		return var_normal;
 	}
 
+	vec4 getVertexColor()
+	{
+		// Maybe we need to check if the model _has_ color attributes? what's the pipeline default?
+		return vec4(var_color, 1.0);
+	}
+
 	MaterialInfo getMaterialInfo(PBRParams params)
 	{
 		MaterialInfo materialInfo;
@@ -77,6 +83,8 @@
 			lowp vec4 albedo        = toLinear(sample_albedo);
 			materialInfo.baseColor  = albedo * params.baseColor;
 		}
+
+		materialInfo.baseColor *= getVertexColor();
 
 		if (params.hasMetallicRoughnessTexture)
 		{

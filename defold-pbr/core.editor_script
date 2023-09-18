@@ -42,8 +42,12 @@ local function get_platform_exe()
     return get_platform_plugin_file(platform_to_binary[editor.platform])
 end
 
+local function get_platform_is_osx()
+    return editor.platform == "x86_64-macos" or editor.platform == "arm64-macos"
+end
+
 local function get_platform_python()
-    if editor.platform == "x86_64-macos" then
+    if get_platform_is_osx() then
         return get_platform_plugin_file("osx-python.sh")
     end
     return "python"
@@ -69,7 +73,7 @@ local function get_platform_mkdir_cmd(directory)
 end
 
 local function get_platform_tool_prereq_cmd()
-    if editor.platform == "x86_64-macos" then
+    if get_platform_is_osx() then
         return {
             action = "shell",
             command = { "chmod", "+x", get_platform_exe() }
@@ -106,7 +110,7 @@ local function get_platform_tool_cmd(input_path, directory)
 end
 
 local function get_platform_content_prereq_cmd()
-    if editor.platform == "x86_64-macos" then
+    if get_platform_is_osx() then
         return {
             action = "shell",
             command = { "chmod", "+x", get_platform_plugin_file("osx-python.sh") }

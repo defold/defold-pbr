@@ -2,6 +2,7 @@
 #define PBR_INPUT
 
 	varying highp   vec4 var_position_world;
+	varying mediump vec3 var_color;
 	varying mediump vec3 var_normal;
 	varying mediump vec3 var_tangent;
 	varying mediump vec2 var_texcoord0;

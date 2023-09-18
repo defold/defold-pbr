@@ -18,6 +18,7 @@ chmod +x ${OUTPUT_PATH}/pbr-utils-linux
 curl ${PBR_TOOLS_BASE_PATH}/pbr-utils-windows.exe --output-dir ${OUTPUT_PATH} -o pbr-utils-windows.exe -L
 
 # File Sync (FS) + put in root (j)
+zip -FSj ${PLUGINS_PATH}/arm64-macos.zip  ${OUTPUT_PATH}/osx-python.sh # TODO: arm64
 zip -FSj ${PLUGINS_PATH}/x86_64-macos.zip ${OUTPUT_PATH}/pbr-utils-macos ${OUTPUT_PATH}/osx-python.sh
 zip -FSj ${PLUGINS_PATH}/x86_64-win32.zip ${OUTPUT_PATH}/pbr-utils-windows.exe
 zip -FSj ${PLUGINS_PATH}/x86_64-linux.zip ${OUTPUT_PATH}/pbr-utils-linux

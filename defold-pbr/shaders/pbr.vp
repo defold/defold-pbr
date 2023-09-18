@@ -1,17 +1,17 @@
-attribute highp vec4 position;
+attribute highp   vec4 position;
 attribute mediump vec3 normal;
 attribute mediump vec3 tangent;
 attribute mediump vec3 color;
 attribute mediump vec2 texcoord0;
 attribute mediump vec2 texcoord1;
 
-//uniform mediump mat4 u_mtx_worldview;
 uniform mediump mat4 u_mtx_view;
 uniform mediump mat4 u_mtx_world;
 uniform mediump mat4 u_mtx_projection;
 uniform mediump mat4 u_mtx_normal;
 
 varying highp   vec4 var_position_world;
+varying mediump vec3 var_color;
 varying mediump vec3 var_normal;
 varying mediump vec3 var_tangent;
 varying mediump vec2 var_texcoord0;
@@ -25,7 +25,7 @@ void main()
 	vec3 N = normalize((u_mtx_normal * vec4(normal, 0.0)).xyz);
 	vec3 B = cross(N, T);
 
-	N = normalize(vec3(u_mtx_world * vec4(normal,     0.0)));
+	N = normalize(vec3(u_mtx_world * vec4(normal, 0.0)));
 
 	var_TBN            = mat3(T, B, N);
 	var_normal         = N;
@@ -33,6 +33,7 @@ void main()
 	var_position_world = p;
 	var_texcoord0      = texcoord0;
 	var_texcoord1      = texcoord1;
+	var_color          = color;
 
 	gl_Position    = u_mtx_projection * u_mtx_view * p;
 }
