@@ -16,6 +16,8 @@ M.DEBUG_MODE = {
 	TANGENTS       = 8,
 	BITANGENTS     = 9,
 	OCCLUSION      = 10,
+	DIFFUSE        = 11,
+	SPECULAR       = 12,
 }
 
 local function light_template(light_type)

@@ -87,8 +87,6 @@
 			materialInfo.baseColor  = albedo * params.baseColor;
 		}
 
-		materialInfo.baseColor *= getVertexColor();
-
 		if (params.hasMetallicRoughnessTexture)
 		{
 			lowp vec4 sample_roughness       = texture2D(tex_metallic_roughness, var_texcoord0);
@@ -96,6 +94,7 @@
 			materialInfo.metallic            = sample_roughness.b * materialInfo.metallic;
 		}
 
+		materialInfo.baseColor     *= getVertexColor();
 		materialInfo.f0             = mix(materialInfo.f0, materialInfo.baseColor.rgb, materialInfo.metallic);
 		materialInfo.diffuseColor   = mix(materialInfo.baseColor.rgb,  vec3(0), materialInfo.metallic);
 		materialInfo.alphaRoughness = materialInfo.perceptualRoughness * materialInfo.perceptualRoughness;
