@@ -36,9 +36,6 @@ function init(self)
 end
 
 function update(self, dt)
-	if PBR.get_environment() == nil then
-		PBR.set_environment("ENV_TEST")
-	end
 	PBR.set_camera_world(go.get_world_position("/camera"))
 end
 

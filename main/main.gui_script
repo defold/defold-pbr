@@ -1,4 +1,3 @@
-local C          = require 'main/constants'
 local PBR        = require 'defold-pbr/core'
 local dirtylarry = require "dirtylarry/dirtylarry"
 
@@ -11,14 +10,6 @@ local function sort_table_by_value(tbl)
 		}
 	end
 	return sorted
-end
-
-local function get_environment_by_name(name)
-	for k,v in pairs(C.ENVIRONMENTS) do
-		if name == v.name then
-			return v
-		end
-	end
 end
 
 function position_widgets(self)
