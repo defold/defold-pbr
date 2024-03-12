@@ -202,4 +202,17 @@ M.get_textures = function()
 	}
 end
 
+M.enable_textures = function()
+	local ctx = get_ctx()
+	render.enable_texture("tex_diffuse_irradiance", 	ctx.handle_irradiance)
+	render.enable_texture("tex_prefiltered_reflection", ctx.handle_prefilter)
+	render.enable_texture("tex_brdflut", 				ctx.handle_brdf_lut)
+end
+
+M.disable_textures = function()
+	render.disable_texture("tex_diffuse_irradiance")
+	render.disable_texture("tex_prefiltered_reflection")
+	render.disable_texture("tex_brdflut")
+end
+
 return M
