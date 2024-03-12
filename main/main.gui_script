@@ -155,8 +155,7 @@ function on_input(self, action_id, action)
 		end
 
 		if env ~= env_ then
-			local env_tbl = get_environment_by_name(env_)
-			PBR.set_environment(env_tbl.name, env_tbl)
+			PBR.set_environment(env_)
 		end
 
 		--------------------------
