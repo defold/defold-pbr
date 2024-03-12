@@ -12,6 +12,8 @@
 	#define DEBUG_MODE_TANGENTS       8
 	#define DEBUG_MODE_BITANGENTS     9
 	#define DEBUG_MODE_OCCLUSION      10
+	#define DEBUG_MODE_DIFFUSE        11
+	#define DEBUG_MODE_SPECULAR       12
 
 	#include "/defold-pbr/shaders/pbr_input.glsl"
 	#include "/defold-pbr/shaders/pbr_lighting.glsl"
@@ -32,6 +34,8 @@
 			else if (PBR_DEBUG_MODE == DEBUG_MODE_TANGENTS)       return vec4((pbrData.vertexNormal + 1.0) * 0.5, 1.0);
 			else if (PBR_DEBUG_MODE == DEBUG_MODE_BITANGENTS)     return vec4((pbrData.vertexNormal + 1.0) * 0.5, 1.0);
 			else if (PBR_DEBUG_MODE == DEBUG_MODE_OCCLUSION)      return vec4(vec3(lightInfo.occlusion), 1.0);
+			else if (PBR_DEBUG_MODE == DEBUG_MODE_DIFFUSE)        return vec4(vec3(exposure(lightInfo.diffuse, PBR_CAMERA_EXPOSURE)), 1.0);
+			else if (PBR_DEBUG_MODE == DEBUG_MODE_SPECULAR)       return vec4(vec3(exposure(lightInfo.specular, PBR_CAMERA_EXPOSURE)), 1.0);
 			return color_in;
 		}
 	#else

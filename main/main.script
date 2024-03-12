@@ -1,4 +1,3 @@
-local C   = require 'main/constants'
 local PBR = require 'defold-pbr/core'
 
 function init(self)
@@ -21,12 +20,6 @@ function init(self)
 
 	local key_light_dir  = vmath.rotate(key_light_qdir, vmath.vector3(0,0,-1))
 	local fill_light_dir = vmath.rotate(fill_light_qdir, vmath.vector3(0,0,-1))
-
-	-- Initialize the PBR ctx
-	PBR.initialize()
-
-	-- Load a default environment
-	PBR.set_environment(C.ENVIRONMENTS[1].name, C.ENVIRONMENTS[1])
 
 	-- Add lights
 	PBR.add_light_directional({

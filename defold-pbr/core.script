@@ -1,0 +1,20 @@
+go.property("brdf_lut", resource.buffer("/defold-pbr/assets/brdf_lut.buffer"))
+
+local PBR = require('defold-pbr/core')
+function init(self)
+	PBR.initialize(self.brdf_lut)
+end
+
+function update(self)
+	if PBR.get_environment() == nil then
+		local env = PBR.get_environments()
+		if env then
+			local first_env = nil
+			for k,v in pairs(env) do
+				if first_env == nil then
+					PBR.set_environment(k)
+				end
+			end
+		end
+	end
+end

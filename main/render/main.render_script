@@ -87,15 +87,14 @@ function update(self)
     -- render background cube
     -- This is the main change between the reference render script and the example one
     ----------------------------------------------------------------------------------
-    render.enable_texture(0, pbr_textures.prefilter)
+
+    PBR.enable_textures()
+
     render.draw(self.background_pred, { constants = pbr_constants })
 
     --------------------------
     -- render models
     --------------------------
-    render.enable_texture(0, pbr_textures.irradiance)
-    render.enable_texture(1, pbr_textures.prefilter)
-    render.enable_texture(2, pbr_textures.brdf_lut)
     
     render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
     render.enable_state(render.STATE_CULL_FACE)
@@ -103,9 +102,7 @@ function update(self)
     render.set_depth_mask(true)
     render.draw(self.model_pred, { constants = pbr_constants })
 
-    render.disable_texture(0)
-    render.disable_texture(1)
-    render.disable_texture(2)
+    PBR.disable_textures()
 
     -- debug rendering
     --

@@ -1,4 +1,3 @@
-local C          = require 'main/constants'
 local PBR        = require 'defold-pbr/core'
 local dirtylarry = require "dirtylarry/dirtylarry"
 
@@ -11,14 +10,6 @@ local function sort_table_by_value(tbl)
 		}
 	end
 	return sorted
-end
-
-local function get_environment_by_name(name)
-	for k,v in pairs(C.ENVIRONMENTS) do
-		if name == v.name then
-			return v
-		end
-	end
 end
 
 function position_widgets(self)
@@ -94,18 +85,18 @@ function init(self)
 	end
 
 	self.env_selection_wid = {}
-	
-	for k,v in pairs(C.ENVIRONMENTS) do
-		self.env_selection_wid[v.name] = {
+
+	for k,v in pairs(PBR.get_environments()) do
+		self.env_selection_wid[k] = {
 			radio = gui.clone(radio_radio),
 			label = gui.clone(radio_label),
 		}
 
-		gui.set_parent(self.env_selection_wid[v.name].radio, left_pane)
-		gui.set_parent(self.env_selection_wid[v.name].label, left_pane)
+		gui.set_parent(self.env_selection_wid[k].radio, left_pane)
+		gui.set_parent(self.env_selection_wid[k].label, left_pane)
 		
-		gui.set_id(self.env_selection_wid[v.name].radio, v.name .. "/larryradio")
-		gui.set_id(self.env_selection_wid[v.name].label, v.name .. "/larrylabel")
+		gui.set_id(self.env_selection_wid[k].radio, k .. "/larryradio")
+		gui.set_id(self.env_selection_wid[k].label, k .. "/larrylabel")
 	end
 
 	self.is_locked = false
@@ -155,8 +146,7 @@ function on_input(self, action_id, action)
 		end
 
 		if env ~= env_ then
-			local env_tbl = get_environment_by_name(env_)
-			PBR.set_environment(env_tbl.name, env_tbl)
+			PBR.set_environment(env_)
 		end
 
 		--------------------------
