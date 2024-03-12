@@ -1,15 +1,41 @@
 mesh: "/assets/scenes/DamagedHelmet_Build/meshes/node_damagedHelmet_-6514.glb"
-material: "/assets/scenes/DamagedHelmet_Build/materials/Material_MR.material"
-textures: "/defold-pbr/textures/blank_cube.cubemap"
-textures: "/defold-pbr/textures/blank_cube.cubemap"
-textures: "/defold-pbr/textures/blank_1x1.png"
-textures: "/assets/scenes/DamagedHelmet_Build/textures/Texture_0.png"
-textures: "/assets/scenes/DamagedHelmet_Build/textures/Texture_1.png"
-textures: "/assets/scenes/DamagedHelmet_Build/textures/Texture_4.png"
-textures: "/assets/scenes/DamagedHelmet_Build/textures/Texture_3.png"
-textures: "/assets/scenes/DamagedHelmet_Build/textures/Texture_2.png"
-
 skeleton: ""
 animations: ""
 default_animation: ""
 name: "node_damagedHelmet_-6514"
+materials {
+  name: "default"
+  material: "/assets/scenes/DamagedHelmet_Build/materials/Material_MR.material"
+  textures {
+    sampler: "tex_diffuse_irradiance"
+    texture: "/defold-pbr/textures/blank_cube.cubemap"
+  }
+  textures {
+    sampler: "tex_prefiltered_reflection"
+    texture: "/defold-pbr/textures/blank_cube.cubemap"
+  }
+  textures {
+    sampler: "tex_brdflut"
+    texture: "/defold-pbr/textures/blank_1x1.png"
+  }
+  textures {
+    sampler: "tex_albedo"
+    texture: "/assets/scenes/DamagedHelmet_Build/textures/Texture_0.png"
+  }
+  textures {
+    sampler: "tex_metallic_roughness"
+    texture: "/assets/scenes/DamagedHelmet_Build/textures/Texture_1.png"
+  }
+  textures {
+    sampler: "tex_normal"
+    texture: "/assets/scenes/DamagedHelmet_Build/textures/Texture_4.png"
+  }
+  textures {
+    sampler: "tex_occlusion"
+    texture: "/assets/scenes/DamagedHelmet_Build/textures/Texture_3.png"
+  }
+  textures {
+    sampler: "tex_emissive"
+    texture: "/assets/scenes/DamagedHelmet_Build/textures/Texture_2.png"
+  }
+}

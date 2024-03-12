@@ -36,7 +36,8 @@ end
 
 local function get_platform_exe()
     local platform_to_binary = {}
-    platform_to_binary["x86_64-macos"] = "pbr-utils-macos"
+    platform_to_binary["arm64-macos"]  = "pbr-utils-arm64-macos"
+    platform_to_binary["x86_64-macos"] = "pbr-utils-x86_64-macos"
     platform_to_binary["x86_64-win32"] = "pbr-utils-windows.exe"
     platform_to_binary["x86_64-linux"] = "pbr-utils-linux"
     return get_platform_plugin_file(platform_to_binary[editor.platform])

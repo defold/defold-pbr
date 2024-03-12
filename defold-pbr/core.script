@@ -1,0 +1,5 @@
+go.property("brdf_lut", resource.buffer("/defold-pbr/assets/brdf_lut.buffer"))
+
+function init(self)
+	require('defold-pbr/core').initialize(self.brdf_lut)
+end

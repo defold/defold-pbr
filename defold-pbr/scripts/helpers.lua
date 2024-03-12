@@ -27,41 +27,37 @@ M.make_prefilter_texture = function(w, h, mipmaps)
 	return resource.create_texture("/defold-pbr/prefilter.texturec", targs)
 end
 
-M.make_brdf_lut = function(path, w, h)
+M.make_brdf_lut = function(brdf_buffer, w, h)
 	local targs = {
 		type   = resource.TEXTURE_TYPE_2D,
 		width  = w,
 		height = h,
-		format = resource.TEXTURE_FORMAT_RGBA32F
+		format = resource.TEXTURE_FORMAT_RGBA16F
 	}
-
-	local tex_path = resource.create_texture("/pbr-brdf-lut.texturec", targs)
-	local data     = resource.load(path)
-	resource.set_texture(tex_path, targs, data)
-	return tex_path
+	return resource.create_texture("/pbr-brdf-lut.texturec", targs, resource.get_buffer(brdf_buffer))
 end
 
-M.load_environment = function(ctx, env)
+M.load_environment = function(ctx, env_data)	
 	resource.set_texture(ctx.texture_irradiance, {
 		type   = resource.TEXTURE_TYPE_CUBE_MAP,
-		width  = ctx.params.irradiance.width,
-		height = ctx.params.irradiance.height,
-		format = resource.TEXTURE_FORMAT_RGBA16F
-	}, resource.load(env.path .. "/irradiance.bin"))
+		format = resource.TEXTURE_FORMAT_RGBA16F,
+		width  = env_data.irradiance_size,
+		height = env_data.irradiance_size,
+	}, resource.get_buffer(env_data.irradiance))
 
-	local slice_width  = ctx.params.prefilter.width
-	local slice_height = ctx.params.prefilter.height
-	local mipmaps      = ctx.params.prefilter.mipmaps
+	local slice_width  = env_data.prefilter_size
+	local slice_height = env_data.prefilter_size
+	local mipmaps      = env_data.prefilter_count
 
 	for i = 0, mipmaps-1 do
-		local slice_path = env.path .. "/prefilter" .. "_mm_" .. i .. ".bin"
+		local slice_property = "prefilter" .. "_mm_" .. i
 		resource.set_texture(ctx.texture_prefilter, {
 			type        = resource.TEXTURE_TYPE_CUBE_MAP,
 			width       = slice_width,
 			height      = slice_height,
 			format      = resource.TEXTURE_FORMAT_RGBA16F,
 			mipmap      = i,
-		}, resource.load(slice_path))
+		}, resource.get_buffer(env_data[slice_property]))
 		slice_width  = slice_height / 2
 		slice_height = slice_height / 2
 	end
