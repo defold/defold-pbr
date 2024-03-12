@@ -133,7 +133,7 @@
 		vec3 FmsEms = Ems * FssEss * F_avg / (1.0 - F_avg * Ems);
 		vec3 k_D    = diffuseColor * (1.0 - FssEss + FmsEms); // we use +FmsEms as indicated by the formula in the blog post (might be a typo in the implementation)
 
-		return vec3(f_ab,0.0) + 0.0000001 * (FmsEms + k_D); // * irradiance;
+		return (FmsEms + k_D) * irradiance;
 	}
 
 	vec3 getIBLRadianceGGX(vec3 n, vec3 v, float roughness, vec3 F0, float specularWeight)
