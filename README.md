@@ -6,7 +6,7 @@ This is the base PBR core extension for Defold and contains a set of scripts, sh
 
 Please consult the README.md in the defold-pbr folder for a guide how to integrate this extension into your project.
 
-Issues? Please open a ticket at the [Github Repository](https://github.com/Jhonnyg/defold-pbr)
+Issues? Please open a ticket at the [Github Repository](https://github.com/defold/defold-pbr)
 Problems or questions? Please contact us at our [Forum](https://forum.defold.com/) or our [Discord Server](https://discord.gg/6eSFn3U5)
 
 ## Credits

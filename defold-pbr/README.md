@@ -5,35 +5,27 @@ This extension is at an alpha/work-in-progress state! If something doesn't work,
 * [Forum](https://forum.defold.com/)
 * [Discord Server](https://discord.gg/6eSFn3U5)
 
-Or open a ticket at the [Github Repository](https://github.com/Jhonnyg/defold-pbr)
+Or open a ticket at the [Github Repository](https://github.com/defold/defold-pbr)
 
 
-### Integrating in .script / gameobject world
+### Integrating and initialization
 
-1) First, add "defold-pbr/assets" to project -> custom resources in your game.project file. This is needed for the PBR-core to find support assets needed during rendering.
+1) To initialize the PBR core, create a new gameobject (or use an existing one) and attach the 'core' script located at /defold-pbr/core.script. This will initialize and create the PBR context.
 
-2) To initialize the PBR core, add the following in a .script or lua module somewhere in the project:
+2) To add an environment light, first create one by right-clicking on a .hdr map and select 'Defold PBR - Create Environment Assets'. This will create a folder next to the .hdr map that contains all the data needed for the PBR lighting. When you have one or more environment maps, add them to the scene by right-clicking somewhere in the scene outline, select 'Add game object file' and then select the environment map .go file.
 
-```lua
-local PBR = require 'defold-pbr/core'
-
-function init(self)
-	-- Initialize the PBR ctx
-	PBR.initialize()
-end
-```
-
-3) After this step, you can start adding lights and environments:
+3) After the core has been initialized, you can start adding lights and environments:
 
 ```lua
 function setup_pbr(self)
-	-- pbr is initialized at this point
-	PBR.set_environment("blue_skies", require("path/to/environment-map/meta"))
+	PBR.set_environment("blue_skies")
+
 	PBR.add_environment_light({
 		direction = vmath.vector3(-1, -1, -1),
 		color     = vmath.vector3(0.5, 0.5, 1),
 		intensity = 1
 	})
+
 	PBR.add_point_light({
 		position  = vmath.vector3(0, 1, 0),
 		color     = vmath.vector3(1, 0, 0),
@@ -42,9 +34,7 @@ function setup_pbr(self)
 end
 ```
 
-4) For the environments to load, you need to add the path to where to find them under project -> custom resources!
-
-5) The light calculations in the shader requires that the camera position is updated whenever the camera has moved.
+4) The light calculations in the shader requires that the camera position is updated whenever the camera has moved. To make sure it's always updated, put this somewhere in a script (make sure the ID is correct):
 ```lua
 function update(self)
 	PBR.set_camera_world(go.get_world_position("/camera"))
@@ -53,45 +43,43 @@ end
 
 * Note: This is not done automatically since this extension doesn't deal with any explicit camera or light components, it is up to each project to define what how "light" or "camera" is represented. This done intentionally so that the extension doesn't impose a specific way of working in custom projects.
 
-6) Assign the reference renderer to the game project under bootstrap -> render
+5) Assign the reference renderer to the game project under bootstrap -> render (or copy it and make your own changes)
 
 (OPTIONAL) If you don't already have a camera setup that renders 3D, you need to do these steps:
 
-7) Create a camera in your collection
-8) In one of your script, add these lines:
+6) Create a camera in your collection
+7) In one of your script, add these lines:
 
 ```lua
 function init(self)
-	msg.post("my-camera-id", "acquire_camera_focus") -- note: You need to input your camera components correct id here
+	-- note: You need to input the correct camera component id here
+	msg.post("my-camera-id", "acquire_camera_focus")
 	msg.post("@render:", "use_camera_projection")
-	-- Other initialization code
+	-- ... Other initialization code
 end
 ```
-
 
 ### Integrating in .render_script
 
 * Note: There is a reference render script available in the defold-pbr/render that you can use a start for integration.
 
-The materials and shaders requires the set of support textures and constants to render properly. To setup the drawing of PBR models, first create a custom render script and render prototype (or copy from the builtins folder) if you don't have one already. In the render scripts, you first need to require the PBR core module somewhere (usually the first top lines of the script):
+The materials and shaders requires the set of support textures and constants to render properly. To setup the drawing of PBR models, first create a custom render script and render prototype (or copy from the builtins folder, or the reference render script available in the PBR extension) if you don't have one already. In the render scripts, you first need to require the PBR core module somewhere (usually the first top lines of the script):
 
 ```lua
 local PBR = require 'defold-pbr/core'
 ```
 
-And then in the update function, you need to grab the support textures from the PBR module and enable them onto the render state:
+And then in the update function, you need to enable the textures before issuing the .draw command and pass in the constants needed for the rendering:
 ```lua
 function update(self)
 	-- do the usual draw setup before drawing, such as clearing buffers etc. The default builtin script takes care of the basic setup here
 
 	-- grab the pbr assets from the PBR core (note, you must have initialized the module first!)
   local pbr_constants = PBR.get_constants()
-  local pbr_textures  = PBR.get_textures()
 
-  -- render the models
-  render.enable_texture(0, pbr_textures.irradiance)
-  render.enable_texture(1, pbr_textures.prefilter)
-  render.enable_texture(2, pbr_textures.brdf_lut)
+  -- let the PBR module enable the textures, they must exactly match the uniforms in the shaders to work.
+  -- so if you make changes to the shaders, you need to bind the textures manually here instead.
+  PBR.enable_textures()
 
   -- this is the basic draw state setup of rendering models
   render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
@@ -100,14 +88,11 @@ function update(self)
   render.set_depth_mask(true)
   render.draw(self.model_pred, { constants = pbr_constants }) -- optionally, pass in a frustum here!
 
-  render.disable_texture(0)
-  render.disable_texture(1)
-  render.disable_texture(2)
+  -- it's not strictly necessary to unbind the textures, but to make sure you don't get side-effect it
+  -- is usually a good idea to reset the state after you are done.
+  PBR.disable_textures()
 end
 ```
-
-Note: The default base material uses the "model" predicate, so make sure to create such a predicate first somewhere in your render scripts init function!
-
 
 ### Generating environment lights from .hdr files
 
