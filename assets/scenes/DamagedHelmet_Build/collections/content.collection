@@ -1,5 +1,0 @@
-name: "content"
-instances: {
-    id: "node_damagedHelmet_-6514"
-    prototype: "/assets/scenes/DamagedHelmet_Build/gameobjects/node_damagedHelmet_-6514.go"
-}

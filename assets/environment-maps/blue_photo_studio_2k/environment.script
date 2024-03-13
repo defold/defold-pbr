@@ -1,0 +1,24 @@
+go.property("irradiance_size", 64)
+go.property("prefilter_size", 256)
+go.property("prefilter_count", 9)
+go.property("brdf_lut_size", 512)
+go.property("irradiance", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/irradiance.buffer"))
+go.property("prefilter_mm_0", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_0.buffer"))
+go.property("prefilter_mm_1", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_1.buffer"))
+go.property("prefilter_mm_2", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_2.buffer"))
+go.property("prefilter_mm_3", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_3.buffer"))
+go.property("prefilter_mm_4", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_4.buffer"))
+go.property("prefilter_mm_5", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_5.buffer"))
+go.property("prefilter_mm_6", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_6.buffer"))
+go.property("prefilter_mm_7", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_7.buffer"))
+go.property("prefilter_mm_8", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_8.buffer"))
+
+local PBR = require("defold-pbr/core")
+function init(self)
+    PBR.add_environment("blue_photo_studio_2k.hdr", go.get_id())
+end
+function on_message(self, message_id, message)
+    if message_id == PBR.MESSAGES.LOAD_ENVIRONMENT then
+        require("defold-pbr/scripts/helpers").load_environment(PBR.context(), self)
+    end
+end

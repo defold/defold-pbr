@@ -1,0 +1,41 @@
+mesh: "/assets/scenes/MetalRoughSpheres_Build/meshes/Model_3.glb"
+skeleton: ""
+animations: ""
+default_animation: ""
+name: "Model_3"
+materials {
+  name: "default"
+  material: "/assets/scenes/MetalRoughSpheres_Build/materials/Material_0.material"
+  textures {
+    sampler: "tex_diffuse_irradiance"
+    texture: "/defold-pbr/textures/blank_cube.cubemap"
+  }
+  textures {
+    sampler: "tex_prefiltered_reflection"
+    texture: "/defold-pbr/textures/blank_cube.cubemap"
+  }
+  textures {
+    sampler: "tex_brdflut"
+    texture: "/defold-pbr/textures/blank_1x1.png"
+  }
+  textures {
+    sampler: "tex_albedo"
+    texture: "/assets/scenes/MetalRoughSpheres_Build/textures/Texture_0.png"
+  }
+  textures {
+    sampler: "tex_metallic_roughness"
+    texture: "/assets/scenes/MetalRoughSpheres_Build/textures/Texture_1.png"
+  }
+  textures {
+    sampler: "tex_normal"
+    texture: "/defold-pbr/textures/blank_1x1.png"
+  }
+  textures {
+    sampler: "tex_occlusion"
+    texture: "/defold-pbr/textures/blank_1x1.png"
+  }
+  textures {
+    sampler: "tex_emissive"
+    texture: "/defold-pbr/textures/blank_1x1.png"
+  }
+}
