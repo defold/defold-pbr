@@ -141,12 +141,20 @@ local CMD_CREATE_ENV_ASSETS = {
     run = function(opts)
         local input_path = trim_leading_slash(editor.get(opts.selection, "path"))
         local directory = get_base_directory(input_path) .. strip_ext(get_base_file_name(input_path))
+        local prereq_cmd = get_platform_tool_prereq_cmd()
 
-        return {
-            get_platform_tool_prereq_cmd(),
-            get_platform_mkdir_cmd(directory),
-            get_platform_tool_cmd(input_path, directory)
-        }
+        if prereq_cmd then
+            return {
+                prereq_cmd,
+                get_platform_mkdir_cmd(directory),
+                get_platform_tool_cmd(input_path, directory)
+            }
+        else
+            return {
+                get_platform_mkdir_cmd(directory),
+                get_platform_tool_cmd(input_path, directory)
+            }
+        end
     end
 }
 
