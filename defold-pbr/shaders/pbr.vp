@@ -1,23 +1,27 @@
-attribute highp   vec4 position;
-attribute mediump vec3 normal;
-attribute mediump vec3 tangent;
-attribute mediump vec3 color;
-attribute mediump vec2 texcoord0;
-attribute mediump vec2 texcoord1;
+#version 140
 
-uniform mediump mat4 u_mtx_view;
-uniform mediump mat4 u_mtx_world;
-uniform mediump mat4 u_mtx_projection;
-uniform mediump mat4 u_mtx_normal;
+in highp   vec4 position;
+in mediump vec3 normal;
+in mediump vec3 tangent;
+in mediump vec3 color;
+in mediump vec2 texcoord0;
+in mediump vec2 texcoord1;
 
-varying highp   vec4 var_position_world;
-varying mediump vec3 var_color;
-varying mediump vec3 var_normal;
-varying mediump vec3 var_tangent;
-varying mediump vec2 var_texcoord0;
-varying mediump vec2 var_texcoord1;
-varying mediump mat3 var_TBN;
+uniform vs_uniforms
+{
+	mediump mat4 u_mtx_view;
+	mediump mat4 u_mtx_world;
+	mediump mat4 u_mtx_projection;
+	mediump mat4 u_mtx_normal;
+};
 
+out highp   vec4 var_position_world;
+out mediump vec3 var_color;
+out mediump vec3 var_normal;
+out mediump vec3 var_tangent;
+out mediump vec2 var_texcoord0;
+out mediump vec2 var_texcoord1;
+out mediump mat3 var_TBN;
 
 #if __VERSION__ < 150
 mat4 inverse(mat4 m)

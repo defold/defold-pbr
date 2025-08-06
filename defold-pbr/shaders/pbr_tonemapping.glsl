@@ -1,3 +1,6 @@
+#ifndef PBR_TONEMAPPING
+#define PBR_TONEMAPPING
+
 vec3 Uncharted2Tonemap(vec3 color)
 {
 	float A = 0.15;
@@ -19,3 +22,5 @@ vec4 tonemap(vec4 color)
 	outcol = outcol * (1.0f / Uncharted2Tonemap(vec3(11.2f)));	
 	return vec4(pow(outcol, vec3(invGamma)), color.a);
 }
+
+#endif // PBR_TONEMAPPING

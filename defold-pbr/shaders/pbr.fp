@@ -1,3 +1,5 @@
+#version 140
+
 #define USE_DEBUG_DRAWING
 #define USE_ROUGHNESS_MAP // Not used
 
