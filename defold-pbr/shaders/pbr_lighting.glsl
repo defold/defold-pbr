@@ -152,7 +152,6 @@ vec3 getIBLRadianceGGX(vec3 n, vec3 v, float roughness, vec3 F0, float specularW
 	vec3 k_S = F0 + Fr * pow(1.0 - NdotV, 5.0);
 	vec3 FssEss = k_S * f_ab.x + f_ab.y;
 
-	// Invastigate: FssEss is causing a spherical artifact sometimes
 	return specularWeight * specularLight * FssEss;
 }
 

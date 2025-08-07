@@ -54,22 +54,22 @@ fragment_constants {
 }
 samplers {
   name: "tex_diffuse_irradiance"
-  wrap_u: WRAP_MODE_REPEAT
-  wrap_v: WRAP_MODE_REPEAT
+  wrap_u: WRAP_MODE_CLAMP_TO_EDGE
+  wrap_v: WRAP_MODE_CLAMP_TO_EDGE
   filter_min: FILTER_MODE_MIN_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
 }
 samplers {
   name: "tex_prefiltered_reflection"
-  wrap_u: WRAP_MODE_REPEAT
-  wrap_v: WRAP_MODE_REPEAT
+  wrap_u: WRAP_MODE_CLAMP_TO_EDGE
+  wrap_v: WRAP_MODE_CLAMP_TO_EDGE
   filter_min: FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
 }
 samplers {
   name: "tex_brdflut"
-  wrap_u: WRAP_MODE_REPEAT
-  wrap_v: WRAP_MODE_REPEAT
+  wrap_u: WRAP_MODE_CLAMP_TO_EDGE
+  wrap_v: WRAP_MODE_CLAMP_TO_EDGE
   filter_min: FILTER_MODE_MIN_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
 }
