@@ -50,7 +50,6 @@ fragment_constants {
     x: 1.0
     y: 1.0
     z: 1.0
-    w: 0.0
   }
 }
 samplers {
@@ -59,7 +58,6 @@ samplers {
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
-  max_anisotropy: 1.0
 }
 samplers {
   name: "tex_prefiltered_reflection"
@@ -67,7 +65,6 @@ samplers {
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR_MIPMAP_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
-  max_anisotropy: 1.0
 }
 samplers {
   name: "tex_brdflut"
@@ -75,7 +72,6 @@ samplers {
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
-  max_anisotropy: 1.0
 }
 samplers {
   name: "tex_albedo"
@@ -83,7 +79,6 @@ samplers {
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
-  max_anisotropy: 1.0
 }
 samplers {
   name: "tex_metallic_roughness"
@@ -91,7 +86,6 @@ samplers {
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
-  max_anisotropy: 1.0
 }
 samplers {
   name: "tex_normal"
@@ -99,7 +93,6 @@ samplers {
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
-  max_anisotropy: 1.0
 }
 samplers {
   name: "tex_occlusion"
@@ -107,7 +100,6 @@ samplers {
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
-  max_anisotropy: 1.0
 }
 samplers {
   name: "tex_emissive"
@@ -115,6 +107,4 @@ samplers {
   wrap_v: WRAP_MODE_REPEAT
   filter_min: FILTER_MODE_MIN_LINEAR
   filter_mag: FILTER_MODE_MAG_LINEAR
-  max_anisotropy: 1.0
 }
-max_page_count: 0
