@@ -104,7 +104,7 @@ vec3 getDiffuseLight(vec3 n)
 
 vec4 getSpecularSample(vec3 reflection, float lod)
 {
-	return texture(tex_prefiltered_reflection, reflection, lod);
+	return textureLod(tex_prefiltered_reflection, reflection, lod);
 }
 
 vec3 getIBLRadianceLambertian(vec3 n, vec3 v, float roughness, vec3 diffuseColor, vec3 F0, float specularWeight)
