@@ -35,7 +35,7 @@ function init(self)
 	})
 end
 
-function update(self, dt)
+function late_update(self, dt)
 	PBR.set_camera_world(go.get_world_position("/camera"))
 end
 

@@ -35,13 +35,16 @@ end
 ```
 
 4) The light calculations in the shader requires that the camera position is updated whenever the camera has moved. To make sure it's always updated, put this somewhere in a script (make sure the ID is correct):
+
 ```lua
-function update(self)
+function late_update(self, dt)
 	PBR.set_camera_world(go.get_world_position("/camera"))
 end
 ```
 
 * Note: This is not done automatically since this extension doesn't deal with any explicit camera or light components, it is up to each project to define what how "light" or "camera" is represented. This done intentionally so that the extension doesn't impose a specific way of working in custom projects.
+
+* Note: The camera position can also be set whenever it has be calculated. If using the update loop, it's best to set the position in the late_update function to ensure the new position has been calculated.
 
 5) Assign the reference renderer to the game project under bootstrap -> render (or copy it and make your own changes)
 
