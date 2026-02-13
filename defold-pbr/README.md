@@ -107,6 +107,10 @@ Note: DON'T OPEN EXECUTABLES OR HDR FILES FROM DEFOLD. The editor will open them
 
 The extension also contains an editor script that converts a GLTF file into a Defold collection that can be used as a complete scene, or parts that can be copied into other collections to combine various scenes. To use this functionality, rick-click on a .glb file and select the "Extract GLTF Content" option in the drop-down. Note that this option will only be available for .glb files specifically.
 
+> [!NOTE]
+> This functionality assumes that Python 3 is installed and available as `python`,
+> and that the `dataclasses-json` package is installed.
+
 ### Material specification
 
 If you use the default setup, the PBR shaders require material data to be exported and represented in a specific way. The GLTF conversion scripts do this data generation automatically, but if you want to do something more custom like changing parameters in runtime, this is how the material data is represented currently:
