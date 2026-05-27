@@ -85,9 +85,9 @@ function update(self)
   PBR.enable_textures()
 
   -- this is the basic draw state setup of rendering models
-  render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
-  render.enable_state(render.STATE_CULL_FACE)
-  render.enable_state(render.STATE_DEPTH_TEST)
+  render.set_blend_func(graphics.BLEND_FACTOR_SRC_ALPHA, graphics.BLEND_FACTOR_ONE_MINUS_SRC_ALPHA)
+  render.enable_state(graphics.STATE_CULL_FACE)
+  render.enable_state(graphics.STATE_DEPTH_TEST)
   render.set_depth_mask(true)
   render.draw(self.model_pred, { constants = pbr_constants }) -- optionally, pass in a frustum here!
 
