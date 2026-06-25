@@ -2,22 +2,6 @@ name: "main"
 instances {
   id: "environment"
   prototype: "/assets/environment-maps/blue_photo_studio_2k/environment.go"
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
 }
 scale_along_z: 0
 embedded_instances {
@@ -25,96 +9,22 @@ embedded_instances {
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/main/main.gui\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "  property_decls {\n"
-  "  }\n"
   "}\n"
   ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
 }
 embedded_instances {
   id: "PBR"
   children: "environments"
   data: "components {\n"
   "  id: \"core\"\n"
-  "  component: \"/defold-pbr/core.script\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "  property_decls {\n"
-  "  }\n"
+  "  component: \"/defold-pbr-extension/core.script\"\n"
   "}\n"
   ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
 }
 embedded_instances {
   id: "environments"
   children: "environment"
   data: ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
 }
 embedded_instances {
   id: "Scene"
@@ -122,110 +32,24 @@ embedded_instances {
   children: "camera"
   children: "main"
   data: ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
 }
 embedded_instances {
   id: "main"
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/main/main.script\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "  property_decls {\n"
-  "  }\n"
   "}\n"
   "components {\n"
   "  id: \"preview\"\n"
   "  component: \"/main/preview.collectionproxy\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "  property_decls {\n"
-  "  }\n"
   "}\n"
   ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
 }
 embedded_instances {
   id: "camera"
   data: "components {\n"
   "  id: \"vantage_component\"\n"
   "  component: \"/vantage/vantage_component.script\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "  properties {\n"
-  "    id: \"orbital_camera\"\n"
-  "    value: \"true\"\n"
-  "    type: PROPERTY_TYPE_BOOLEAN\n"
-  "  }\n"
-  "  properties {\n"
-  "    id: \"movement_speed\"\n"
-  "    value: \"0.1\"\n"
-  "    type: PROPERTY_TYPE_NUMBER\n"
-  "  }\n"
-  "  properties {\n"
-  "    id: \"zoom\"\n"
-  "    value: \"3.5\"\n"
-  "    type: PROPERTY_TYPE_NUMBER\n"
-  "  }\n"
-  "  property_decls {\n"
-  "  }\n"
   "}\n"
   "embedded_components {\n"
   "  id: \"camera\"\n"
@@ -235,37 +59,11 @@ embedded_instances {
   "near_z: 0.1\\n"
   "far_z: 1000.0\\n"
   "auto_aspect_ratio: 1\\n"
-  "orthographic_projection: 0\\n"
-  "orthographic_zoom: 1.0\\n"
   "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
   "}\n"
   ""
   position {
-    x: 0.0
-    y: 0.0
     z: 5.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
   }
 }
 embedded_instances {
@@ -273,47 +71,104 @@ embedded_instances {
   data: "embedded_components {\n"
   "  id: \"model\"\n"
   "  type: \"model\"\n"
-  "  data: \"mesh: \\\"/builtins/assets/meshes/cube.dae\\\"\\n"
-  "skeleton: \\\"\\\"\\n"
-  "animations: \\\"\\\"\\n"
-  "default_animation: \\\"\\\"\\n"
+  "  data: \"mesh: \\\"/builtins/assets/gltf/cube.gltf\\\"\\n"
   "name: \\\"unnamed\\\"\\n"
   "materials {\\n"
   "  name: \\\"default\\\"\\n"
   "  material: \\\"/assets/materials/background.material\\\"\\n"
   "  textures {\\n"
   "    sampler: \\\"tex_prefiltered_reflection\\\"\\n"
-  "    texture: \\\"/defold-pbr/textures/blank_cube.cubemap\\\"\\n"
+  "    texture: \\\"/defold-pbr-extension/textures/blank_cube.cubemap\\\"\\n"
   "  }\\n"
   "}\\n"
   "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
   "}\n"
   ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
   scale3 {
     x: 100.0
     y: 100.0
     z: 100.0
+  }
+}
+embedded_instances {
+  id: "key_light"
+  data: "embedded_components {\n"
+  "  id: \"light\"\n"
+  "  type: \"directional_light\"\n"
+  "  data: \"data {\\n"
+  "  struct {\\n"
+  "    fields {\\n"
+  "      key: \\\"color\\\"\\n"
+  "      value {\\n"
+  "        list {\\n"
+  "          values {\\n"
+  "            number: 0.5\\n"
+  "          }\\n"
+  "          values {\\n"
+  "            number: 0.5\\n"
+  "          }\\n"
+  "          values {\\n"
+  "            number: 1.0\\n"
+  "          }\\n"
+  "        }\\n"
+  "      }\\n"
+  "    }\\n"
+  "    fields {\\n"
+  "      key: \\\"intensity\\\"\\n"
+  "      value {\\n"
+  "        number: 1.0\\n"
+  "      }\\n"
+  "    }\\n"
+  "  }\\n"
+  "}\\n"
+  "\"\n"
+  "}\n"
+  ""
+  rotation {
+    x: -0.3535534
+    y: -0.35355338
+    z: -0.14644659
+    w: 0.8535534
+  }
+}
+embedded_instances {
+  id: "fill_light"
+  data: "embedded_components {\n"
+  "  id: \"light\"\n"
+  "  type: \"directional_light\"\n"
+  "  data: \"data {\\n"
+  "  struct {\\n"
+  "    fields {\\n"
+  "      key: \\\"color\\\"\\n"
+  "      value {\\n"
+  "        list {\\n"
+  "          values {\\n"
+  "            number: 1.0\\n"
+  "          }\\n"
+  "          values {\\n"
+  "            number: 0.5\\n"
+  "          }\\n"
+  "          values {\\n"
+  "            number: 0.0\\n"
+  "          }\\n"
+  "        }\\n"
+  "      }\\n"
+  "    }\\n"
+  "    fields {\\n"
+  "      key: \\\"intensity\\\"\\n"
+  "      value {\\n"
+  "        number: 0.5\\n"
+  "      }\\n"
+  "    }\\n"
+  "  }\\n"
+  "}\\n"
+  "\"\n"
+  "}\n"
+  ""
+  rotation {
+    x: -0.8535534
+    y: 0.14644665
+    z: -0.35355332
+    w: -0.35355344
   }
 }

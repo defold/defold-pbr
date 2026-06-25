@@ -13,12 +13,12 @@ go.property("prefilter_mm_6", resource.buffer("/assets/environment-maps/blue_pho
 go.property("prefilter_mm_7", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_7.buffer"))
 go.property("prefilter_mm_8", resource.buffer("/assets/environment-maps/blue_photo_studio_2k/prefilter_mm_8.buffer"))
 
-local PBR = require("defold-pbr/core")
+local PBR = require("defold-pbr-extension/core")
 function init(self)
     PBR.add_environment("blue_photo_studio_2k.hdr", go.get_id())
 end
 function on_message(self, message_id, message)
     if message_id == PBR.MESSAGES.LOAD_ENVIRONMENT then
-        require("defold-pbr/scripts/helpers").load_environment(PBR.context(), self)
+        require("defold-pbr-extension/scripts/helpers").load_environment(PBR.context(), self)
     end
 end

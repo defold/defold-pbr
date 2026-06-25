@@ -31,7 +31,7 @@ local function strip_ext(str)
 end
 
 local function get_platform_plugin_file(the_file)
-    return "build/plugins/defold-pbr/plugins/" .. the_file
+    return "build/plugins/defold-pbr-extension/plugins/" .. the_file
 end
 
 local function get_platform_exe()

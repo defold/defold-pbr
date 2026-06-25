@@ -1,113 +1,58 @@
-local PBR        = require 'defold-pbr/core'
+local PBR = require "defold-pbr-extension/core"
 local dirtylarry = require "dirtylarry/dirtylarry"
 
-local function sort_table_by_value(tbl)
-	local sorted = {}
-	for k, v in pairs(tbl) do
-		sorted[v+1] = {
-			name  = k,
-			value = v,
-		}
-	end
-	return sorted
-end
-
-function position_widgets(self)
-	local height     = 24
-	local start_y    = -96
-	local start_x    = 24
+local function position_widgets(self)
+	local height = 24
+	local start_y = -96
+	local start_x = 24
 	local text_scale = 0.3
-
 	local i = 0
-
-	gui.set_position(self.debug_mode_label, vmath.vector3(12, start_y, 0))
-	gui.set_scale(self.debug_mode_label, vmath.vector3(text_scale * 2, text_scale * 2, 1))
-
-	i = i + 1
-
-	for k,v in ipairs(self.debug_mode_wids) do
-		gui.set_position(v.radio, vmath.vector3(start_x, start_y - height * i, 0))
-		gui.set_position(v.label, vmath.vector3(start_x + 24, start_y - height * i, 0))
-		gui.set_scale(v.radio, vmath.vector3(text_scale, text_scale, 1))
-		gui.set_scale(v.label, vmath.vector3(text_scale, text_scale, 1))
-		gui.set_text(v.label, v.name)
-
-		i = i + 1
-	end
-
-	i = i + 1
 
 	gui.set_position(self.environment_label, vmath.vector3(12, start_y - height * i, 0))
 	gui.set_scale(self.environment_label, vmath.vector3(text_scale * 2, text_scale * 2, 1))
 
 	i = i + 1
-	for k,v in pairs(self.env_selection_wid) do
-		gui.set_position(v.radio, vmath.vector3(start_x, start_y - height * i, 0))
-		gui.set_position(v.label, vmath.vector3(start_x + 24, start_y - height * i, 0))
-		gui.set_scale(v.radio, vmath.vector3(text_scale, text_scale, 1))
-		gui.set_scale(v.label, vmath.vector3(text_scale, text_scale, 1))
-		gui.set_text(v.label, k)
+	for name, widget in pairs(self.env_selection_wid) do
+		gui.set_position(widget.radio, vmath.vector3(start_x, start_y - height * i, 0))
+		gui.set_position(widget.label, vmath.vector3(start_x + 24, start_y - height * i, 0))
+		gui.set_scale(widget.radio, vmath.vector3(text_scale, text_scale, 1))
+		gui.set_scale(widget.label, vmath.vector3(text_scale, text_scale, 1))
+		gui.set_text(widget.label, name)
 		i = i + 1
 	end
 end
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	-- radio
+
 	local radio_radio = gui.get_node("template/larryradio")
 	local radio_label = gui.get_node("template/larrylabel")
-	local left_pane   = gui.get_node("debug-left-pane")
+	local left_pane = gui.get_node("debug-left-pane")
 
-	self.debug_mode_wids = {}
-	self.debug_mode_label = gui.clone(radio_label)
 	self.environment_label = gui.clone(radio_label)
-
-	gui.set_text(self.debug_mode_label, "Debug Mode")
-	gui.set_parent(self.debug_mode_label, left_pane)
-
 	gui.set_text(self.environment_label, "Environment")
 	gui.set_parent(self.environment_label, left_pane)
 
-	for k,v in ipairs(sort_table_by_value(PBR.DEBUG_MODE)) do
-		local debug_wid = {
-			name  = v.name,
-			value = v.value,
-			radio = gui.clone(radio_radio),
-			label = gui.clone(radio_label),
-		}
-
-		gui.set_parent(debug_wid.radio, left_pane)
-		gui.set_parent(debug_wid.label, left_pane)
-		
-		gui.set_id(debug_wid.radio, v.name .. "/larryradio")
-		gui.set_id(debug_wid.label, v.name .. "/larrylabel")
-		self.debug_mode_wids[k] = debug_wid
-	end
-
 	self.env_selection_wid = {}
-
-	for k,v in pairs(PBR.get_environments()) do
-		self.env_selection_wid[k] = {
+	for name, _ in pairs(PBR.get_environments()) do
+		self.env_selection_wid[name] = {
 			radio = gui.clone(radio_radio),
 			label = gui.clone(radio_label),
 		}
 
-		gui.set_parent(self.env_selection_wid[k].radio, left_pane)
-		gui.set_parent(self.env_selection_wid[k].label, left_pane)
-		
-		gui.set_id(self.env_selection_wid[k].radio, k .. "/larryradio")
-		gui.set_id(self.env_selection_wid[k].label, k .. "/larrylabel")
+		gui.set_parent(self.env_selection_wid[name].radio, left_pane)
+		gui.set_parent(self.env_selection_wid[name].label, left_pane)
+		gui.set_id(self.env_selection_wid[name].radio, name .. "/larryradio")
+		gui.set_id(self.env_selection_wid[name].label, name .. "/larrylabel")
 	end
 
 	self.is_locked = false
 	self.show_settings = false
-
 	position_widgets(self)
 end
 
 function on_input(self, action_id, action)
-
-	dirtylarry:button("settings", action_id, action, function ()
+	dirtylarry:button("settings", action_id, action, function()
 		self.show_settings = not self.show_settings
 		if self.show_settings then
 			gui.animate(gui.get_node("debug-left-pane"), "position.x", 0, gui.EASING_OUTEXPO, 0.5)
@@ -123,47 +68,15 @@ function on_input(self, action_id, action)
 			self.is_locked = true
 		end
 
-		--------------------------
-		-- Handle debug selection
-		--------------------------
-		local debug_mode = PBR.get_debug_mode()
-		local debug_mode_ = debug_mode
-		for k,v in pairs(self.debug_mode_wids) do
-			debug_mode_ = dirtylarry:radio(v.name, action_id, action, v.name, debug_mode_)
-		end
-
-		if debug_mode ~= debug_mode_ then
-			PBR.set_debug_mode(debug_mode_)
-		end
-
-		--------------------------
-		-- Handle env selection
-		--------------------------
 		local env = PBR.get_environment()
-		local env_ = env
-		for k,v in pairs(self.env_selection_wid) do
-			env_ = dirtylarry:radio(k, action_id, action, k, env_)
+		local selected_env = env
+		for name, _ in pairs(self.env_selection_wid) do
+			selected_env = dirtylarry:radio(name, action_id, action, name, selected_env)
 		end
 
-		if env ~= env_ then
-			PBR.set_environment(env_)
+		if env ~= selected_env then
+			PBR.set_environment(selected_env)
 		end
-
-		--------------------------
-		-- Handle camera exposure
-		--------------------------
-		PBR.set_exposure(dirtylarry:slider("camera_exposure", action_id, action, 0.01, 8, PBR.get_exposure()))
-
-		-----------------------
-		-- Handle light sliders
-		-----------------------
-		local light_0 = PBR.get_light_params(0)
-		light_0.intensity = dirtylarry:slider("light_0", action_id, action, 0, 20, light_0.intensity)
-		PBR.set_light_params(0, light_0)
-
-		local light_1 = PBR.get_light_params(1)
-		light_1.intensity = dirtylarry:slider("light_1", action_id, action, 0, 20, light_1.intensity)
-		PBR.set_light_params(1, light_1)
 
 		if action.released then
 			self.is_locked = false

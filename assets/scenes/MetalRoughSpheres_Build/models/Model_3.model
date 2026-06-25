@@ -5,37 +5,37 @@ default_animation: ""
 name: "Model_3"
 materials {
   name: "default"
-  material: "/assets/scenes/MetalRoughSpheres_Build/materials/Material_0.material"
+  material: "/defold-pbr-extension/materials/Defold-PBR.material"
   textures {
     sampler: "tex_diffuse_irradiance"
-    texture: "/defold-pbr/textures/blank_cube.cubemap"
+    texture: "/defold-pbr-extension/textures/blank_cube.cubemap"
   }
   textures {
     sampler: "tex_prefiltered_reflection"
-    texture: "/defold-pbr/textures/blank_cube.cubemap"
+    texture: "/defold-pbr-extension/textures/blank_cube.cubemap"
   }
   textures {
     sampler: "tex_brdflut"
-    texture: "/defold-pbr/textures/blank_1x1.png"
+    texture: "/defold-pbr-extension/textures/blank_1x1.png"
   }
   textures {
-    sampler: "tex_albedo"
+    sampler: "PbrMetallicRoughness_baseColorTexture"
     texture: "/assets/scenes/MetalRoughSpheres_Build/textures/Texture_0.png"
   }
   textures {
-    sampler: "tex_metallic_roughness"
+    sampler: "PbrMetallicRoughness_metallicRoughnessTexture"
     texture: "/assets/scenes/MetalRoughSpheres_Build/textures/Texture_1.png"
   }
   textures {
-    sampler: "tex_normal"
-    texture: "/defold-pbr/textures/blank_1x1.png"
+    sampler: "PbrMaterial_normalTexture"
+    texture: "/defold-pbr-extension/textures/blank_1x1.png"
   }
   textures {
-    sampler: "tex_occlusion"
-    texture: "/defold-pbr/textures/blank_1x1.png"
+    sampler: "PbrMaterial_occlusionTexture"
+    texture: "/defold-pbr-extension/textures/blank_1x1.png"
   }
   textures {
-    sampler: "tex_emissive"
-    texture: "/defold-pbr/textures/blank_1x1.png"
+    sampler: "PbrMaterial_emissiveTexture"
+    texture: "/defold-pbr-extension/textures/blank_1x1.png"
   }
 }

@@ -1,6 +1,6 @@
-go.property("brdf_lut", resource.buffer("/defold-pbr/assets/brdf_lut.buffer"))
+go.property("brdf_lut", resource.buffer("/defold-pbr-extension/assets/brdf_lut.buffer"))
 
-local PBR = require('defold-pbr/core')
+local PBR = require('defold-pbr-extension/core')
 function init(self)
 	PBR.initialize(self.brdf_lut)
 end

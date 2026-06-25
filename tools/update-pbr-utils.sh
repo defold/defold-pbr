@@ -5,8 +5,8 @@
 export PBR_TOOLS_BASE_PATH=https://github.com/Jhonnyg/defold-pbr-utils/releases/latest/download/
 export BLENDER_TOOLS_BASE_PATH=https://github.com/defold/blender-content-pipeline/archive/refs/heads/master.zip
 
-export TOOLS_PATH=defold-pbr/tools
-export PLUGINS_PATH=defold-pbr/plugins
+export TOOLS_PATH=defold-pbr-extension/tools
+export PLUGINS_PATH=defold-pbr-extension/plugins
 export OUTPUT_PATH=tools
 
 curl ${PBR_TOOLS_BASE_PATH}/pbr-utils-arm64-macos --output-dir ${OUTPUT_PATH} -o pbr-utils-arm64-macos -L

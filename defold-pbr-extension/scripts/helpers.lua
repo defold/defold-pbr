@@ -13,7 +13,7 @@ M.make_irradiance_texture = function(w, h)
 		height = h,
 		format = graphics.TEXTURE_FORMAT_RGBA16F
 	}
-	return resource.create_texture("/defold-pbr/irradiance.texturec", targs)
+	return resource.create_texture("/defold-pbr-extension/irradiance.texturec", targs)
 end
 
 M.make_prefilter_texture = function(w, h, mipmaps)
@@ -24,7 +24,7 @@ M.make_prefilter_texture = function(w, h, mipmaps)
 		format      = graphics.TEXTURE_FORMAT_RGBA16F,
 		max_mipmaps = mipmaps
 	}
-	return resource.create_texture("/defold-pbr/prefilter.texturec", targs)
+	return resource.create_texture("/defold-pbr-extension/prefilter.texturec", targs)
 end
 
 M.make_brdf_lut = function(brdf_buffer, w, h)

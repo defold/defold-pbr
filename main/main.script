@@ -1,47 +1,13 @@
-local PBR = require 'defold-pbr/core'
-
 function init(self)
-	msg.post(".",        "acquire_input_focus")
-	msg.post("@render:", "use_camera_projection")
-	msg.post("camera",   "acquire_camera_focus")
-	msg.post("#preview", "load")
-
-	local key_light_qdir = vmath.quat(
-		-0.3535534,
-		-0.353553385,
-		-0.146446586,
-		0.8535534)
-
-	local fill_light_qdir = vmath.quat(
-		-0.8535534,
-		0.146446645,
-		-0.353553325,
-		-0.353553444)
-
-	local key_light_dir  = vmath.rotate(key_light_qdir, vmath.vector3(0,0,-1))
-	local fill_light_dir = vmath.rotate(fill_light_qdir, vmath.vector3(0,0,-1))
-
-	-- Add lights
-	PBR.add_light_directional({
-		direction = vmath.normalize(key_light_dir),
-		color     = vmath.vector3(0.5,0.5,1),
-		intensity = 1,
-	})
-
-	PBR.add_light_directional({
-		direction = vmath.normalize(fill_light_dir),
-		color     = vmath.vector3(1,0.5,0),
-		intensity = 0.5
-	})
-end
-
-function late_update(self, dt)
-	PBR.set_camera_world(go.get_world_position("/camera"))
+    msg.post(".",        "acquire_input_focus")
+    msg.post("@render:", "use_camera_projection")
+    msg.post("camera",   "acquire_camera_focus")
+    msg.post("#preview", "load")
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("proxy_loaded") then
-		msg.post(sender, "init")
-		msg.post(sender, "enable")
-	end
+    if message_id == hash("proxy_loaded") then
+        msg.post(sender, "init")
+        msg.post(sender, "enable")
+    end
 end

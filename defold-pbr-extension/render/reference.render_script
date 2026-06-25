@@ -27,7 +27,7 @@ local DEFAULT_NEAR = -1
 local DEFAULT_FAR =   1
 local DEFAULT_ZOOM =  1
 
-local PBR = require 'defold-pbr/core'
+local PBR = require 'defold-pbr-extension/core'
 
 --
 -- projection that centers content with maintained aspect ratio and optional zoom
@@ -186,7 +186,6 @@ function update(self)
     -- PBR setup
     ----------------
     PBR.enable_textures()
-    camera_world.frustum.constants = PBR.get_constants()
 
     -- render `model` predicate for default 3D material
     --

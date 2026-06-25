@@ -17,9 +17,10 @@ package = com.defold.example.basic3d
 
 [project]
 title = defold-pbr
-custom_resources = defold-pbr/assets, assets/environment-maps
+custom_resources = defold-pbr-extension/assets, assets/environment-maps
 dependencies#0 = https://github.com/Jhonnyg/vantage/archive/refs/heads/master.zip
 dependencies#1 = https://github.com/andsve/dirtylarry/archive/master.zip
+dependencies#2 = https://github.com/defold/asset-pbr/archive/refs/tags/0.1.0.zip
 
 [physics]
 type = 3D
@@ -39,7 +40,7 @@ clear_color_green = 0.25
 clear_color_blue = 0.25
 
 [library]
-include_dirs = defold-pbr
+include_dirs = defold-pbr-extension
 
 [shader]
 output_spirv = 1
