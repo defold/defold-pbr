@@ -19,6 +19,16 @@ vertex_constants {
   name: "mtx_normal"
   type: CONSTANT_TYPE_NORMAL
 }
+fragment_constants {
+  name: "pbr_exposure"
+  type: CONSTANT_TYPE_USER
+  value {
+    x: 1.0
+    y: 0.0
+    z: 0.0
+    w: 0.0
+  }
+}
 samplers {
   name: "tex_diffuse_irradiance"
   wrap_u: WRAP_MODE_CLAMP_TO_EDGE
