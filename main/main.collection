@@ -5,14 +5,6 @@ instances {
 }
 scale_along_z: 0
 embedded_instances {
-  id: "ui"
-  data: "components {\n"
-  "  id: \"main\"\n"
-  "  component: \"/main/main.gui\"\n"
-  "}\n"
-  ""
-}
-embedded_instances {
   id: "PBR"
   children: "environments"
   data: "components {\n"
