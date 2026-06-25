@@ -13,6 +13,7 @@ uniform vs_uniforms
 	mediump mat4 u_mtx_world;
 	mediump mat4 u_mtx_projection;
 	mediump mat4 u_mtx_normal;
+	mediump mat4 u_mtx_world_inverse;
 };
 
 out highp   vec4 var_position_world;
@@ -71,7 +72,7 @@ void main()
 {
 	vec4 position_view = u_mtx_world * vec4(position.xyz, 1.0);
 	vec3 T = normalize((u_mtx_world * vec4(tangent, 0.0)).xyz);
-	vec3 N = normalize(transpose(inverse(u_mtx_world)) * vec4(normal, 0.0)).xyz; //normalize((u_mtx_normal * vec4(normal, 0.0)).xyz);
+	vec3 N = normalize(transpose(u_mtx_world_inverse) * vec4(normal, 0.0)).xyz; //normalize((u_mtx_normal * vec4(normal, 0.0)).xyz);
 	vec3 B = normalize(-cross(N, T));
 
 	// N = normalize(transpose(inverse(u_mtx_world)) * vec4(normal, 0.0)).xyz;
