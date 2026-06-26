@@ -108,7 +108,7 @@ embedded_instances {
   "    fields {\\n"
   "      key: \\\"intensity\\\"\\n"
   "      value {\\n"
-  "        number: 1.0\\n"
+  "        number: 0.5\\n"
   "      }\\n"
   "    }\\n"
   "  }\\n"
@@ -116,6 +116,9 @@ embedded_instances {
   "\"\n"
   "}\n"
   ""
+  position {
+    x: 1.529084
+  }
   rotation {
     x: -0.3535534
     y: -0.35355338
@@ -157,6 +160,9 @@ embedded_instances {
   "\"\n"
   "}\n"
   ""
+  position {
+    x: -1.843454
+  }
   rotation {
     x: -0.8535534
     y: 0.14644665

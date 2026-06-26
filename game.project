@@ -16,7 +16,7 @@ input_method = HiddenInputField
 package = com.defold.example.basic3d
 
 [project]
-title = defold-pbr
+title = extension-pbr
 custom_resources = defold-pbr-extension/assets, assets/environment-maps
 dependencies#0 = https://github.com/Jhonnyg/vantage/archive/refs/heads/master.zip
 dependencies#1 = https://github.com/andsve/dirtylarry/archive/master.zip
