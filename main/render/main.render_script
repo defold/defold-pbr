@@ -22,6 +22,7 @@ local MSG_SET_CAMERA_PROJ =     hash("use_camera_projection")
 local MSG_USE_STRETCH_PROJ =    hash("use_stretch_projection")
 local MSG_USE_FIXED_PROJ =      hash("use_fixed_projection")
 local MSG_USE_FIXED_FIT_PROJ =  hash("use_fixed_fit_projection")
+local MSG_SET_EXPOSURE =        hash("set_exposure")
 
 local DEFAULT_NEAR = -1
 local DEFAULT_FAR =   1
@@ -148,6 +149,9 @@ function init(self)
 
     local state = create_state()
     self.state = state
+    self.exposure = 1.0
+    self.constants = render.constant_buffer()
+    self.constants.pbr_exposure = vmath.vector4(self.exposure, 0, 0, 0)
     local camera_world = create_camera(state, "camera_world", true)
     init_camera(camera_world, get_stretch_projection)
     local camera_gui = create_camera(state, "camera_gui")
@@ -174,6 +178,8 @@ function update(self)
     -- setup camera view and projection
     --
     local camera_world = state.cameras.camera_world
+    self.constants.pbr_exposure = vmath.vector4(self.exposure, 0, 0, 0)
+    camera_world.frustum.constants = self.constants
     render.set_viewport(0, 0, state.window_width, state.window_height)
     render.set_view(camera_world.view)
     render.set_projection(camera_world.proj)
@@ -241,5 +247,7 @@ function on_message(self, message_id, message)
     elseif message_id == MSG_USE_FIXED_FIT_PROJ then
         init_camera(camera, get_fixed_fit_projection, message.near, message.far)
         update_camera(camera, state)
+    elseif message_id == MSG_SET_EXPOSURE then
+        self.exposure = message.exposure or message[1] or self.exposure
     end
 end

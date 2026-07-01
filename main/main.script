@@ -9,5 +9,8 @@ function on_message(self, message_id, message, sender)
     if message_id == hash("proxy_loaded") then
         msg.post(sender, "init")
         msg.post(sender, "enable")
+    elseif message_id == hash("set_light_intensity") then
+        local light = message.index == 1 and "/key_light#light" or "/fill_light#light"
+        go.set(light, "intensity", message.intensity)
     end
 end
