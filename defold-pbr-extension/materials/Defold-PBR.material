@@ -1,6 +1,6 @@
 name: "Defold-PBR-Extension"
 tags: "model"
-vertex_program: "/defold-pbr/shaders/pbr.vp"
+vertex_program: "/builtins/materials/gltf.vp"
 fragment_program: "/defold-pbr-extension/shaders/pbr.fp"
 vertex_space: VERTEX_SPACE_LOCAL
 vertex_constants {

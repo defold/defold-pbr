@@ -7,15 +7,19 @@ This extension is at an alpha/work-in-progress state. If something does not work
 
 Or open a ticket at the [Github Repository](https://github.com/defold/defold-pbr).
 
+## Minimum Defold version
+
+Requires **Defold 1.14.1 or later**.
+
 ## What This Adds
 
-The base `/defold-pbr` asset library owns the material inputs, BRDF, Defold LightBuffer integration, punctual lights, emissive, occlusion, and final composition. This extension layers image based lighting on top of that base shader stack.
+The engine's `/builtins/materials/gltf.*` shaders provide material inputs, BRDF, Defold LightBuffer integration, punctual lights, emissive, occlusion, and final composition. This extension replaces the built-in constant ambient contribution with diffuse irradiance and prefiltered specular reflections from an HDR environment, using a BRDF LUT.
 
-Use Defold directional, point, and spot light components for punctual lights. The extension no longer registers or uploads custom light arrays.
+Use Defold directional, point, and spot light components for punctual lights. The extension does not register or upload custom light arrays. The separate `asset-pbr` dependency is no longer required. For basic PBR without IBL, use the engine's built-in materials directly.
 
 ## Integration
 
-1. Add both the base asset library and this extension to your project.
+1. Add this extension to your project dependencies and fetch libraries. Do not add `asset-pbr` for this extension.
 2. Create a game object and attach `/defold-pbr-extension/core.script`.
 3. Create environment assets by right-clicking an `.hdr` map and selecting `Defold PBR - Create Environment Assets`.
 4. Add the generated environment `.go` file to the collection.
@@ -33,7 +37,7 @@ end
 
 ## Render Script Setup
 
-The extension material needs the generated IBL textures bound while drawing models. Punctual lights and ambient light come from Defold light components and the built-in LightBuffer used by the base `/defold-pbr` shaders.
+The extension material needs the generated IBL textures bound while drawing models. Punctual lights come from Defold light components and the built-in LightBuffer. Indirect lighting comes from the bound environment textures.
 
 ```lua
 local PBR = require "defold-pbr-extension/core"
@@ -57,7 +61,7 @@ tex_brdflut
 
 ## Material Inputs
 
-The extension material uses the same glTF material data and sampler names as the base PBR material:
+The extension material uses `/builtins/materials/gltf.vp`, the built-in glTF material data, and the same sampler names as `/builtins/materials/gltf.material`:
 
 ```glsl
 PbrMetallicRoughness_baseColorTexture
@@ -67,13 +71,28 @@ PbrMaterial_occlusionTexture
 PbrMaterial_emissiveTexture
 ```
 
-IBL is injected into the base shader library through `PBRLightData` before final composition:
+IBL is assigned to `PBRLighting.indirect` before the built-in composition step:
 
 ```glsl
-PBRLightData pbr_data = calculate_pbr_light_data(params, material, var_position.xyz);
-add_pbr_light_data(pbr_data, calculate_ibl_light_data(params, material));
-vec3 color = composite_pbr_light_data(pbr_data);
+PBRMaterial inputs = pbr_sample_material(var_texcoord0, var_color);
+PBRSurface surface = pbr_sample_surface(inputs, var_texcoord0);
+MaterialInfo material = pbr_create_material_info(inputs);
+PBRLighting lighting = pbr_create_lighting();
+if (!inputs.unlit)
+{
+    lighting.direct = pbr_evaluate_direct_lighting(material, surface, var_view);
+    lighting.indirect = calculate_ibl_light_data(surface, material);
+}
+vec3 color = pbr_compose_lighting(inputs, lighting, inputs.occlusion, inputs.occlusion);
 ```
+
+The full fragment shader also applies the built-in sidedness and alpha-cutoff checks, preserves the material's alpha mode, applies exposure, and converts the composed linear color to sRGB. Material occlusion affects indirect lighting; unlit materials skip both punctual lighting and IBL.
+
+## Upgrading From The asset-pbr-Based Version
+
+Update the extension and remove the `asset-pbr` dependency if nothing else in your project uses it, then run **Project > Fetch Libraries**. The extension material path, generated environment assets, texture bindings, and Lua API stay the same.
+
+Custom shaders must replace `/defold-pbr/shaders/*` includes with the engine's glTF shader modules. Material sampling now uses `PBRMaterial`, geometry uses `PBRSurface`, and direct/indirect light contributions use `PBRLighting` and `PBRLightContribution`. See `/defold-pbr-extension/shaders/pbr.fp` and `pbr_ibl.glsl` for the complete integration.
 
 ## Generating Environment Lights From HDR Files
 
@@ -83,9 +102,8 @@ Note: The first time you run the executables, your OS might block them. Run them
 
 Note: Do not open executables or HDR files from Defold. The editor may open them as text and lock up for a long time. Instead, right-click the folder and select `Show in desktop`.
 
-## Exporting Content From GLB Files
+## Importing glTF And GLB Models
 
-The extension also contains an editor script that converts a GLTF file into a Defold collection. Right-click a `.glb` file and select `Extract GLTF Content`.
+Use Defold 1.14.1's native glTF/GLB importer. Expand the file in the Assets view to inspect its meshes, materials, and images, then assign the file or one of its meshes to a Model component. Let the editor populate the glTF material and texture bindings, and assign `/defold-pbr-extension/materials/Defold-PBR.material` to the models that should receive IBL.
 
-> [!NOTE]
-> This functionality assumes that Python 3 is installed and available as `python`, and that the `dataclasses-json` package is installed.
+The old `Defold PBR - Extract GLTF content` command is no longer registered. Its bundled Blender converter generates materials for the old shader API; the native importer replaces that workflow and does not require Python or Blender. Existing generated environment assets are unrelated to this change and can still be used.
