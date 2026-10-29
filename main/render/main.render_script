@@ -196,10 +196,10 @@ function update(self)
 
     -- render `model` predicate for default 3D material
     --
-    render.enable_state(graphics.STATE_CULL_FACE)
+    -- Let the glTF fragment shader handle single- and double-sided materials.
+    render.disable_state(graphics.STATE_CULL_FACE)
     render.draw(predicates.model, camera_world.frustum)
     render.set_depth_mask(false)
-    render.disable_state(graphics.STATE_CULL_FACE)
 
     PBR.disable_textures()
 
