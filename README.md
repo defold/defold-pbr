@@ -14,9 +14,9 @@ this extension is only needed when you want its IBL features. The built-in fragm
 
 ## Updating older projects
 
-When upgrading an existing project, update this extension, remove the `asset-pbr` dependency if no other code uses it, and run **Project > Fetch Libraries**. Existing generated environment assets and the `defold-pbr-extension/core` Lua API can still be used. Custom shaders using the old `PBRParams` / `PBRLightData` API need to migrate to the built-in `PBRMaterial`, `PBRSurface`, and `PBRLighting` API.
+When upgrading an existing project, migrate local materials, model bindings, custom shaders, and old converter output before removing the `asset-pbr` dependency. Follow the [migration checklist](defold-pbr-extension/README.md#upgrading-from-the-asset-pbr-based-version), then remove the dependency if no required resources use it and run **Project > Fetch Libraries**. Existing generated environment assets and the `defold-pbr-extension/core` Lua API can still be used. Custom shaders using the old `PBRParams` / `PBRLightData` API need to migrate to the built-in `PBRMaterial`, `PBRSurface`, and `PBRLighting` API.
 
-Import glTF/GLB models with the editor's native importer and assign the extension material for IBL. The legacy Blender-based `Extract GLTF content` command has been retired because it generates materials for the old shader API.
+Import glTF/GLB models with the editor's native importer and assign the extension material for IBL. The supplied render scripts support OPAQUE and MASK materials; BLEND requires a custom render pass, as described in the [render setup](defold-pbr-extension/README.md#render-script-setup). The legacy Blender-based `Extract GLTF content` command has been retired because it generates materials for the old shader API.
 
 Please read [the extension manual](defold-pbr-extension/README.md) for integration details.
 
