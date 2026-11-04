@@ -47,13 +47,6 @@ local function get_platform_is_osx()
     return editor.platform == "x86_64-macos" or editor.platform == "arm64-macos"
 end
 
-local function get_platform_python()
-    if get_platform_is_osx() then
-        return get_platform_plugin_file("osx-python.sh")
-    end
-    return "python"
-end
-
 local function win32_adjust_path(path)
     return path:gsub("/","\\")
 end
@@ -110,22 +103,6 @@ local function get_platform_tool_cmd(input_path, directory)
     end
 end
 
-local function get_platform_content_prereq_cmd()
-    if get_platform_is_osx() then
-        return {
-            action = "shell",
-            command = { "chmod", "+x", get_platform_plugin_file("osx-python.sh") }
-        }
-    end
-end
-
-local function get_platform_content_tool_cmd(input_path, input_base)
-    return {
-        action = "shell",
-        command = { get_platform_python(), get_platform_plugin_file("blender-content-pipeline-master/blender_to_defold.py"), "--gltf-to-defold", input_path, "--relative-path", input_base }
-    }
-end
-
 local CMD_CREATE_ENV_ASSETS = {
     label     = "Defold PBR - Create Environment Assets",
     locations = {"Assets"},
@@ -158,32 +135,9 @@ local CMD_CREATE_ENV_ASSETS = {
     end
 }
 
-local CMD_CONVERT_GLTF_CONTENT = {
-    label = "Defold PBR - Extract GLTF content",
-    locations = {"Assets"},
-    query     = {
-        selection = {
-            type        = "resource",
-            cardinality = "one"
-        }
-    },
-    active = function(opts)
-        return ends_with(editor.get(opts.selection, "path"), ".glb")
-    end,
-    run = function(opts)
-        local input_path = trim_leading_slash(editor.get(opts.selection, "path"))
-        local input_base = get_base_directory(input_path)
-        return {
-            get_platform_content_prereq_cmd(),
-            get_platform_content_tool_cmd(input_path, input_base)
-        }
-    end
-}
-
 function M.get_commands()
     return {
-        CMD_CREATE_ENV_ASSETS,
-        CMD_CONVERT_GLTF_CONTENT
+        CMD_CREATE_ENV_ASSETS
     }
 end
 

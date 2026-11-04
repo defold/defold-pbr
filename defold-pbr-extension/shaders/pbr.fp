@@ -1,25 +1,36 @@
 #version 140
 
-in mediump mat4 var_view;
+#include "/builtins/materials/gltf_sampling.glsl"
+#include "/builtins/materials/gltf_lighting.glsl"
+#include "/defold-pbr-extension/shaders/pbr_ibl.glsl"
+
+out vec4 out_fragColor;
 
 uniform pbr_extension_fs_uniforms
 {
     mediump vec4 pbr_exposure;
 };
 
-#define MAX_LIGHT_COUNT 8
-#include "/defold-pbr/shaders/pbr_lighting.glsl"
-#include "/defold-pbr-extension/shaders/pbr_ibl.glsl"
-
 void main()
 {
-    PBRParams params = get_pbr_params();
-    MaterialInfo material = get_material_info(params);
+    PBRMaterial inputs = pbr_sample_material(var_texcoord0, var_color);
+    PBRSurface surface = pbr_sample_surface(inputs, var_texcoord0);
 
-    PBRLightData pbr_data = calculate_pbr_light_data(params, material, var_position.xyz);
-    add_pbr_light_data(pbr_data, calculate_ibl_light_data(params, material));
+    // Sample the normal map before discarding, as in the built-in glTF shader.
+    if ((!inputs.doubleSided && !gl_FrontFacing) || pbr_should_discard_alpha(inputs))
+    {
+        discard;
+    }
 
-    vec3 color = composite_pbr_light_data(pbr_data) * pbr_exposure.x;
-    out_fragColor = vec4(to_output(color), pbr_data.alpha);
-    out_fragColor.a = 1.0;
+    MaterialInfo material = pbr_create_material_info(inputs);
+    PBRLighting lighting = pbr_create_lighting();
+    if (!inputs.unlit)
+    {
+        lighting.direct = pbr_evaluate_direct_lighting(material, surface, var_view);
+        // The environment replaces the built-in constant ambient contribution.
+        lighting.indirect = calculate_ibl_light_data(surface, material);
+    }
+
+    vec3 color = pbr_compose_lighting(inputs, lighting, inputs.occlusion, inputs.occlusion);
+    out_fragColor = vec4(pbr_linear_to_srgb(color * pbr_exposure.x), pbr_get_alpha(inputs));
 }
